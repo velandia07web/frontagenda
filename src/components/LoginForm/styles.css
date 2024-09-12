@@ -1,0 +1,128 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  font-family: "Helvetica", sans-serif;
+  /* Degradado lateral de los colores principales */
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #007072 50%, #20201d 100%);
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.login-form {
+  background: #ffffff; /* Formulario en blanco para destacar sobre el fondo */
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 350px;
+  animation: slideIn 0.5s ease;
+  transition: transform 0.3s ease; /* Transición para el efecto de aumento */
+}
+
+.login-form:hover {
+  transform: scale(1.05); /* Efecto de aumento al pasar el mouse */
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.form-title {
+  font-size: 1.6em;
+  color: #007072; /* Color principal del título */
+  margin-bottom: 20px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 40px;
+  border-radius: 30px;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  background-color: #ffffff;
+  border-color: #007072; /* Color de borde al hacer focus */
+  box-shadow: 0 0 5px rgba(0, 112, 114, 0.5);
+  outline: none;
+  animation: inputClick 0.2s ease; /* Efecto de movimiento al hacer clic */
+}
+
+@keyframes inputClick {
+  0% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #b0b0b0;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007072;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-button:hover {
+  background-color: #20201d; /* Color oscuro al hacer hover en el botón */
+}
+
+.forgot-password {
+  background: none;
+  border: none;
+  color: #007072;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+  text-decoration: underline;
+}
+
+.forgot-password:hover {
+  color: #20201d;
+}
