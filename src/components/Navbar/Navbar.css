@@ -1,0 +1,41 @@
+.custom-navbar {
+  padding: 1rem !important; /* Ajusta el padding según tus necesidades */
+}
+
+.navbar {
+  background-color: #f4f8f8 !important;
+  border-bottom: 2px solid #dcdcdc; /* Borde inferior gris */
+}
+#notificaciones {
+  background-color: #20201d;
+  color: #fff;
+  border-color: #fff;
+  margin-left: -30%;
+}
+.custom-badge {
+  padding-left: 0.5rem !important;
+}
+
+.navbar .custom-csesion {
+  padding-right: 10px !important; /* El !important ayuda a forzar el estilo si Bootstrap lo está sobrescribiendo */
+  color: #111213;
+}
+
+.custom-container {
+  width: 100%;
+
+  margin-left: 206px !important;
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+    margin-left: 200px;
+  }
+}
+
+.dropdown-menu[data-bs-popper] {
+  top: 100%;
+  left: -180px !important;
+  margin-top: var(--bs-dropdown-spacer);
+}
