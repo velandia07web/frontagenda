@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 //import "datatables.net-dt/css/jquery.dataTables.css";
 import LoginForm from "./components/LoginForm/LoginForm";
 import HomePage from "./components/HomePage/HomePage";
-//import TablaClientes from "./components/tablaClientes/tablaClientes"; // Importa el componente correctamente
+import TablaClientes from "./components/tablaClientes/tablaClientes"; // Importa el componente correctamente
 
 function App() {
   return (
@@ -17,8 +17,8 @@ function App() {
         {/* Ruta para la página principal */}
         <Route path="/home" element={<HomePage />} />
 
-        {/* Ruta para la tabla de clientes 
-        <Route path="/clientes" element={<TablaClientes />} />*/}
+        {/* Ruta para la tabla de clientes */}
+        <Route path="/clientes" element={<TablaClientes />} />
       </Routes>
     </Router>
   );
