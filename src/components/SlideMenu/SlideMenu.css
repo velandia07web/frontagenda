@@ -1,0 +1,148 @@
+/* Estilos generales para el SlideMenu */
+.slide-menu-container {
+  height: 100vh;
+  top: 0;
+  position: fixed;
+  left: 0;
+  z-index: 999; /* Asegura que el SlideMenu esté sobre otros elementos */
+}
+
+.menu-header {
+  height: 74px;
+  background-color: #cfd5d5;
+  border-bottom: 2px solid #dcdcdc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: width 0.3s ease;
+}
+
+.menu-header.collapsed {
+  width: 60px;
+}
+
+.menu-header.expanded {
+  width: 250px;
+}
+
+.slide-menu {
+  background: hsla(181, 100%, 22%, 0.818);
+  color: #20201d;
+  transition: width 0.3s ease;
+  height: calc(100vh - 74px); /* Ajusta la altura para no solapar el Navbar */
+}
+
+.slide-menu.collapsed {
+  width: 60px;
+}
+
+.slide-menu.expanded {
+  width: 250px;
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 550px) {
+  .menu-header {
+    width: 60px; /* Mantiene el header en estado contraído en pantallas pequeñas */
+  }
+  .menu-header.collapsed {
+    width: 60px;
+  }
+
+  .menu-header.expanded {
+    width: 60px;
+  }
+  .menu-toggle {
+    /*display: none;  Oculta el botón en pantallas pequeñas */
+    cursor: pointer;
+    display: block;
+    color: #fff;
+    font-size: 24px;
+  }
+
+  .slide-menu-container {
+    transition: width 0.3s ease;
+  }
+
+  .slide-menu {
+    /*position: fixed;  Cambia la posición para que el menú no afecte el contenido principal */
+    top: 74px; /* Ajusta para que esté debajo del header */
+    left: 0;
+    height: calc(100vh - 74px); /* Altura ajustada para pantallas pequeñas */
+    width: 60px; /* Ancho por defecto cuando está colapsado */
+
+    transition: width 0.3s ease;
+  }
+
+  .slide-menu.collapsed {
+    width: 60px;
+    display: none; /* Oculta el menú por defecto */
+  }
+
+  .slide-menu.expanded {
+    width: 250px;
+    /*display: block;  Muestra el menú cuando está expandido */
+
+    width: 250px; /* Ancho cuando está expandido */
+    transition: width 1.3s ease;
+  }
+
+  .slide-menu:hover {
+    width: 250px; /* Ancho cuando está en hover */
+    transition: width 0.3s ease;
+  }
+}
+
+/* Estilos para pantallas grandes */
+@media (min-width: 551px) {
+  .menu-toggle {
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .slide-menu-container.expanded .slide-menu {
+    width: 250px; /* Ancho cuando está expandido */
+    transition: width 0.3s ease;
+  }
+}
+
+.menu-items {
+  list-style: none;
+  padding: 44px 0;
+  margin: 0;
+  transition: width 0.3s ease;
+}
+
+.menu-item {
+  cursor: pointer;
+  padding: 12px 20px;
+  display: flex;
+  color: #20201d;
+  align-items: center;
+  font-size: 16px;
+}
+
+.menu-item:hover {
+  background-color: #ffffff;
+}
+
+.chevron-icon {
+  margin-left: auto;
+  color: #20201d;
+}
+
+.submenu {
+  list-style: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.submenu li {
+  display: flex;
+  align-items: center;
+  padding: 5px 40px;
+}
+
+.submenu li:hover {
+  background-color: #ffffff;
+}
