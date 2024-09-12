@@ -1,0 +1,13 @@
+h2 {
+  color: #007072; /* Ajusta el color para que combine con el resto del proyecto */
+  text-align: center;
+}
+
+button {
+  background-color: #007072;
+  border: none;
+}
+
+button:hover {
+  background-color: #005f5f;
+}
