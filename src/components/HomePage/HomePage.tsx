@@ -26,6 +26,14 @@ const HomePage: React.FC = () => {
     navigate("/clientes"); // Navega a la ruta de la tabla de clientes
   };
 
+  const goToroll = () => {
+    navigate("/roll"); // Navega a la ruta de la tabla de roll
+  };
+
+  const goToequipo = () => {
+    navigate("/equipo"); // Navega a la ruta de la tabla de roll
+  };
+
   return (
     <div className="homepage-container">
       <NavbarComponent />
@@ -35,7 +43,13 @@ const HomePage: React.FC = () => {
           className={`content-area ${isSlideMenuExpanded ? "expanded" : ""}`}
         >
           <div className="dashboard-cards">
-            <div className="card">
+            <div className="card" onClick={goToroll}>
+              {" "}
+              <FontAwesomeIcon icon={faPuzzlePiece} className="card-icon" />
+              <h3>Tabla Roll</h3>
+            </div>
+            <div className="card" onClick={goToequipo}>
+              {" "}
               <FontAwesomeIcon icon={faCog} className="card-icon" />
               <h3>Equipo de Trabajo</h3>
             </div>
@@ -49,10 +63,7 @@ const HomePage: React.FC = () => {
               <FontAwesomeIcon icon={faBoxes} className="card-icon" />
               <h3>Inventario</h3>
             </div>
-            <div className="card">
-              <FontAwesomeIcon icon={faPuzzlePiece} className="card-icon" />
-              <h3>Productos Adicionales</h3>
-            </div>
+
             <div className="card">
               <FontAwesomeIcon icon={faShoppingCart} className="card-icon" />
               <h3>Ventas</h3>

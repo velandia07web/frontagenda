@@ -11,10 +11,12 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "./SlideMenu.css";
-import FormEquipoTrabajo from "../formEquipoTrabajo/equipoTrabajo";
+import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
 import FormClientes from "../formClientes/formClientes";
 import FormCiudades from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
+import FormRoll from "../formRoll/formRoll";
+import { useNavigate } from "react-router-dom"; // Importar useNavigate
 
 interface SlideMenuProps {
   onToggleMenu: (isExpanded: boolean) => void;
@@ -28,7 +30,9 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     agenda: false,
     usuarios: false,
   });
+  const navigate = useNavigate();
 
+  const [showModalroll, setShowModalroll] = useState(false);
   const [showModalEquipo, setShowModalEquipo] = useState(false);
   const [showModalClientes, setShowModalClientes] = useState(false);
   const [showModalCiudades, setShowModalCiudades] = useState(false);
@@ -59,8 +63,55 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     }));
   };
 
-  const handleOpenModalEquipo = () => setShowModalEquipo(true);
-  const handleCloseModalEquipo = () => setShowModalEquipo(false);
+  // constane para navegar en las tablas y vistas al dar click en slide
+  const handleNavigateToTablaRoll = () => {
+    navigate("/roll"); // Redirige a la vista de Tabla Roll
+  };
+
+  const handleNavigateToTablaequipo = () => {
+    navigate("/equipo"); // Redirige a la vista de Tabla Roll
+  };
+
+  const handleNavigateToTablaclientes = () => {
+    navigate("/clientes"); // Redirige a la vista de Tabla Roll
+  };
+
+  // logica para recibir datos al modal
+  const [isEditingRoll, setIsEditingRoll] = useState(false);
+  const [selectedRoll, setSelectedRoll] = useState<{
+    nombreRoll: string;
+  } | null>(null);
+
+  const [isEditingequipo, setIsEditingequipo] = useState(false);
+  const [selectedequipo, setSelectedequipo] = useState<{
+    nombre: string;
+  } | null>(null);
+
+  // logica modal de formularios roll
+  const handleOpenCreateRollModal = () => {
+    setSelectedRoll(null); // No hay rol seleccionado, es un nuevo rol
+    setIsEditingRoll(false); // No estamos editando
+    setShowModalroll(true); // Abre el modal
+  };
+
+  const handleCloseModalroll = () => {
+    setShowModalroll(false); // Cierra el modal
+    setIsEditingRoll(false); // Resetea el modo edición
+    setSelectedRoll(null); // Resetea el rol seleccionado
+  };
+
+  // modal equipo trabajo
+  const handleOpenCreateequipoModal = () => {
+    setSelectedequipo(null); // No hay rol seleccionado, es un nuevo rol
+    setIsEditingequipo(false); // No estamos editando
+    setShowModalEquipo(true); // Abre el modal
+  };
+  const handleCloseModalequipo = () => {
+    setShowModalEquipo(false); // Cierra el modal
+    setIsEditingequipo(false); // Resetea el modo edición
+    setSelectedequipo(null); // Resetea el rol seleccionado
+  };
+
   const handleOpenModalClientes = () => setShowModalClientes(true);
   const handleCloseModalClientes = () => setShowModalClientes(false);
   const handleOpenModalCiudades = () => setShowModalCiudades(true);
@@ -114,12 +165,18 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
               </div>
               {isSubMenuOpen.formularios && (isExpanded || isHovered) && (
                 <ul className="submenu">
+                  <li onClick={handleOpenCreateRollModal}>
+                    <FontAwesomeIcon icon={faMinus} /> Crear Roll
+                  </li>
+
+                  <li onClick={handleOpenCreateequipoModal}>
+                    <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
+                  </li>
+
                   <li onClick={handleOpenModalClientes}>
                     <FontAwesomeIcon icon={faMinus} /> Clientes
                   </li>
-                  <li onClick={handleOpenModalEquipo}>
-                    <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
-                  </li>
+
                   <li onClick={handleOpenModalCiudades}>
                     <FontAwesomeIcon icon={faMinus} /> Ciudades
                   </li>
@@ -180,11 +237,16 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
               </div>
               {isSubMenuOpen.usuarios && (isExpanded || isHovered) && (
                 <ul className="submenu">
-                  <li>
+                  <li onClick={handleNavigateToTablaRoll}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Tabla Roll</span>
+                  </li>
+
+                  <li onClick={handleNavigateToTablaequipo}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Equipo de Trabajo</span>
                   </li>
-                  <li>
+                  <li onClick={handleNavigateToTablaclientes}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Clientes</span>
                   </li>
@@ -207,10 +269,22 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         </div>
       </div>
 
+      {/* logica modales close */}
+      {showModalroll && (
+        <FormRoll
+          show={showModalroll}
+          handleClose={handleCloseModalroll}
+          roll={selectedRoll} // Pasa el rol seleccionado o null
+          isEditing={isEditingRoll} // Pasa si estamos editando o creando
+        />
+      )}
+
       {showModalEquipo && (
-        <FormEquipoTrabajo
+        <FormEquipo
           show={showModalEquipo}
-          handleClose={handleCloseModalEquipo}
+          handleClose={handleCloseModalequipo}
+          roll={selectedequipo} // Pasa el rol seleccionado o null
+          isEditing={isEditingequipo} // Pasa si estamos editando o creando
         />
       )}
       {showModalClientes && (

@@ -138,7 +138,9 @@ const TablaClientes: React.FC = () => {
       title: `Editando cliente: ${row.nombre}`,
       text: "Deseas editar cliente.",
       icon: "info",
+      showCancelButton: true,
       confirmButtonText: "OK",
+      cancelButtonText: "Cancelar",
     }).then((result: SweetAlertResult) => {
       // Usa SweetAlertResult aquí
       if (result.isConfirmed) {

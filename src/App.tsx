@@ -6,7 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import LoginForm from "./components/LoginForm/LoginForm";
 import HomePage from "./components/HomePage/HomePage";
 import TablaClientes from "./components/tablaClientes/tablaClientes"; // Importa el componente correctamente
-
+import TablaRoll from "./components/tablaRoll/tablaRoll";
+import TablaEquipo from "./components/tablaEquipoTrabajo/tablaEquipo";
 function App() {
   return (
     <Router>
@@ -19,6 +20,12 @@ function App() {
 
         {/* Ruta para la tabla de clientes */}
         <Route path="/clientes" element={<TablaClientes />} />
+
+        {/* Ruta para la tabla de roll */}
+        <Route path="/roll" element={<TablaRoll />} />
+
+        {/* Ruta para la tabla de equipo */}
+        <Route path="/equipo" element={<TablaEquipo />} />
       </Routes>
     </Router>
   );
