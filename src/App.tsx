@@ -8,6 +8,7 @@ import HomePage from "./components/HomePage/HomePage";
 import TablaClientes from "./components/tablaClientes/tablaClientes"; // Importa el componente correctamente
 import TablaRoll from "./components/tablaRoll/tablaRoll";
 import TablaEquipo from "./components/tablaEquipoTrabajo/tablaEquipo";
+import TablaRed from "./components/tablaRedSocial/RedSocial";
 function App() {
   return (
     <Router>
@@ -26,6 +27,9 @@ function App() {
 
         {/* Ruta para la tabla de equipo */}
         <Route path="/equipo" element={<TablaEquipo />} />
+
+        {/* Ruta para la tabla de equipo */}
+        <Route path="/red" element={<TablaRed />} />
       </Routes>
     </Router>
   );

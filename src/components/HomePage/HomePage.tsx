@@ -53,6 +53,7 @@ const HomePage: React.FC = () => {
               <FontAwesomeIcon icon={faCog} className="card-icon" />
               <h3>Equipo de Trabajo</h3>
             </div>
+
             <div className="card" onClick={goToClientes}>
               {" "}
               {/* Agrega el evento de clic */}

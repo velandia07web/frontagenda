@@ -16,6 +16,7 @@ import FormClientes from "../formClientes/formClientes";
 import FormCiudades from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
 import FormRoll from "../formRoll/formRoll";
+import FormRed from "../formRedSocial/formRedSocial";
 import { useNavigate } from "react-router-dom"; // Importar useNavigate
 
 interface SlideMenuProps {
@@ -34,6 +35,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
 
   const [showModalroll, setShowModalroll] = useState(false);
   const [showModalEquipo, setShowModalEquipo] = useState(false);
+  const [showModalRed, setShowModalRed] = useState(false);
   const [showModalClientes, setShowModalClientes] = useState(false);
   const [showModalCiudades, setShowModalCiudades] = useState(false);
   const [showModalInventario, setShowModalInventario] = useState(false);
@@ -72,6 +74,10 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     navigate("/equipo"); // Redirige a la vista de Tabla Roll
   };
 
+  const handleNavigateToTablaRed = () => {
+    navigate("/red"); // Redirige a la vista de Tabla Roll
+  };
+
   const handleNavigateToTablaclientes = () => {
     navigate("/clientes"); // Redirige a la vista de Tabla Roll
   };
@@ -85,6 +91,11 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   const [isEditingequipo, setIsEditingequipo] = useState(false);
   const [selectedequipo, setSelectedequipo] = useState<{
     nombre: string;
+  } | null>(null);
+
+  const [isEditingRed, setIsEditingRed] = useState(false);
+  const [selectedRed, setSelectedRed] = useState<{
+    nombreRed: string;
   } | null>(null);
 
   // logica modal de formularios roll
@@ -110,6 +121,18 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setShowModalEquipo(false); // Cierra el modal
     setIsEditingequipo(false); // Resetea el modo edición
     setSelectedequipo(null); // Resetea el rol seleccionado
+  };
+
+  // modal Red Conexion
+  const handleOpenCreateRedModal = () => {
+    setSelectedRed(null); // No hay rol seleccionado, es un nuevo rol
+    setIsEditingRed(false); // No estamos editando
+    setShowModalRed(true); // Abre el modal
+  };
+  const handleCloseModalRed = () => {
+    setShowModalRed(false); // Cierra el modal
+    setIsEditingRed(false); // Resetea el modo edición
+    setSelectedRed(null); // Resetea el rol seleccionado
   };
 
   const handleOpenModalClientes = () => setShowModalClientes(true);
@@ -171,6 +194,10 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
 
                   <li onClick={handleOpenCreateequipoModal}>
                     <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
+                  </li>
+
+                  <li onClick={handleOpenCreateRedModal}>
+                    <FontAwesomeIcon icon={faMinus} /> Crear Red De Conexion
                   </li>
 
                   <li onClick={handleOpenModalClientes}>
@@ -246,6 +273,11 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Equipo de Trabajo</span>
                   </li>
+
+                  <li onClick={handleNavigateToTablaRed}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Red De Conexion</span>
+                  </li>
                   <li onClick={handleNavigateToTablaclientes}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Clientes</span>
@@ -287,6 +319,16 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
           isEditing={isEditingequipo} // Pasa si estamos editando o creando
         />
       )}
+
+      {showModalRed && (
+        <FormRed
+          show={showModalRed}
+          handleClose={handleCloseModalRed}
+          roll={selectedRed} // Pasa el rol seleccionado o null
+          isEditing={isEditingRed} // Pasa si estamos editando o creando
+        />
+      )}
+
       {showModalClientes && (
         <FormClientes
           show={showModalClientes}
