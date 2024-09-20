@@ -5,23 +5,52 @@ import Swal from "sweetalert2"; // Importar SweetAlert2
 import "./styles.css";
 
 const LoginForm: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>(""); // Cambiamos a email
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === "jhonatan" && password === "123") {
-      navigate("/home");
-    } else {
+
+    try {
+      // Enviar la petición POST al servidor
+      const response = await fetch("http://localhost:3310/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email, // Pasamos el email
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data:", data);
+        console.log("Token antes de almacenar:", data.data.token);
+        console.log("User ID antes de almacenar:", data.data.user.id);
+        // Guardar el token en localStorage o cookies si es necesario
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("userId", data.data.user.id);
+
+        // Redirigir al home si el login es exitoso
+        navigate("/home");
+      } else {
+        const errorData = await response.json();
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorData.message || "Credenciales incorrectas", // Mostrar el mensaje de error del backend
+          confirmButtonColor: "#007072",
+        });
+      }
+    } catch (error) {
       Swal.fire({
-        icon: "error", // Tipo de ícono
+        icon: "error",
         title: "Error",
-        text:
-          username !== "jhonatan"
-            ? "Usuario incorrecto"
-            : "Contraseña incorrecta", // Mensaje dinámico
-        confirmButtonColor: "#007072", // Color del botón de confirmación
+        text: "Hubo un problema con el servidor. Inténtalo de nuevo.",
+        confirmButtonColor: "#007072",
       });
     }
   };
@@ -34,10 +63,10 @@ const LoginForm: React.FC = () => {
         <div className="input-group">
           <FaUser className="input-icon" />
           <input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email" // Cambiar el tipo a email
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>

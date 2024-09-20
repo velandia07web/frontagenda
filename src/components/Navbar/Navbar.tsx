@@ -1,16 +1,28 @@
+// components/NavbarComponent.jsx
+
 import React from "react";
 import { Container, Nav, Navbar, Dropdown, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import "./Navbar.css";
+import { logout } from "../../servicios/authService"; // Importar el servicio de logout
 
 const NavbarComponent: React.FC = () => {
   const notificationCount = 3; // Ejemplo: número de notificaciones
 
+  const handleLogout = async () => {
+    const success = await logout();
+    if (success) {
+      alert("Sesión cerrada correctamente");
+      window.location.href = "/login"; // Redirigir al login
+    } else {
+      alert("Error al cerrar la sesión1");
+    }
+  };
+
   return (
     <Navbar expand="lg" className="custom-navbar">
       <Container className="custom-container">
-        {/*<Navbar.Brand href="#">Navbar scroll</Navbar.Brand>*/}
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end">
           <Nav
@@ -47,7 +59,11 @@ const NavbarComponent: React.FC = () => {
               </Dropdown.Menu>
             </Dropdown>
 
-            <Nav.Link href="#" className="custom-csesion">
+            <Nav.Link
+              href="#"
+              className="custom-csesion"
+              onClick={handleLogout}
+            >
               <FontAwesomeIcon icon={faSignOutAlt} />{" "}
               {/* Icono de cerrar sesión */}
               Cerrar sesión
