@@ -13,8 +13,8 @@ const NavbarComponent: React.FC = () => {
   const handleLogout = async () => {
     const success = await logout();
     if (success) {
-      alert("Sesión cerrada correctamente");
-      window.location.href = "/login"; // Redirigir al login
+      //alert("Sesión cerrada correctamente");
+      window.location.href = "/"; // Redirigir al login
     } else {
       alert("Error al cerrar la sesión1");
     }

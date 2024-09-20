@@ -9,6 +9,9 @@ import TablaClientes from "./components/tablaClientes/tablaClientes"; // Importa
 import TablaRoll from "./components/tablaRoll/tablaRoll";
 import TablaEquipo from "./components/tablaEquipoTrabajo/tablaEquipo";
 import TablaRed from "./components/tablaRedSocial/RedSocial";
+import TablaZona from "./components/tablaZona/tablaZona";
+import TablaCiudades from "./components/tablaCiudades/tablaCiudades";
+import CambioContrasena from "./components/CambioContrasena/CambioContrasena";
 function App() {
   return (
     <Router>
@@ -30,6 +33,14 @@ function App() {
 
         {/* Ruta para la tabla de equipo */}
         <Route path="/red" element={<TablaRed />} />
+
+        {/* Ruta para la tabla de equipo */}
+        <Route path="/zona" element={<TablaZona />} />
+
+        {/* Ruta para la tabla de equipo */}
+        <Route path="/ciudad" element={<TablaCiudades />} />
+        {/* Nueva ruta para el cambio de contraseña */}
+        <Route path="/cambio-contrasena" element={<CambioContrasena />} />
       </Routes>
     </Router>
   );

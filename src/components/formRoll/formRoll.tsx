@@ -1,40 +1,43 @@
+// FormRoll.tsx
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 interface FormRollProps {
   show: boolean;
   handleClose: () => void;
-  roll: { nombreRoll: string } | null; // El rol seleccionado, o null si es un nuevo rol
-  isEditing: boolean; // Si estamos en modo edición o no
+  role: Role | null;
+  isEditing: boolean;
+  onSave: (role: Role | null) => void;
+}
+
+interface Role {
+  id: string;
+  name: string;
 }
 
 const FormRoll: React.FC<FormRollProps> = ({
   show,
   handleClose,
-  roll,
+  role,
   isEditing,
+  onSave,
 }) => {
-  const [nombreRoll, setNombreRoll] = useState("");
+  const [name, setName] = useState("");
 
-  // Si estamos en modo edición y el rol existe, llenamos el formulario con los datos actuales
   useEffect(() => {
-    if (isEditing && roll) {
-      setNombreRoll(roll.nombreRoll); // Carga el nombre del rol si estamos editando
+    if (role) {
+      setName(role.name);
     } else {
-      setNombreRoll(""); // Resetea el formulario si estamos creando
+      setName("");
     }
-  }, [isEditing, roll]);
+  }, [role]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isEditing) {
-      // Lógica para actualizar el rol
-      console.log("Editando rol:", nombreRoll);
-    } else {
-      // Lógica para crear un nuevo rol
-      console.log("Creando nuevo rol:", nombreRoll);
-    }
-    handleClose(); // Cierra el modal después de guardar
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const updatedRole = role ? { ...role, name } : { id: "", name }; // ID se manejaría en backend para nuevo rol
+    onSave(updatedRole);
   };
 
   return (
@@ -44,25 +47,24 @@ const FormRoll: React.FC<FormRollProps> = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="nombreRoll">
+          <Form.Group controlId="formRoleName">
             <Form.Label>Nombre del Rol</Form.Label>
             <Form.Control
               type="text"
-              value={nombreRoll}
-              onChange={(e) => setNombreRoll(e.target.value)}
+              placeholder="Ingrese el nombre del rol"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </Form.Group>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
           <Button variant="primary" type="submit">
-            {isEditing ? "Guardar Cambios" : "Crear Rol"}
+            {isEditing ? "Actualizar" : "Crear"}
           </Button>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };

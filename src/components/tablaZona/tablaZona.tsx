@@ -11,88 +11,61 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./tablaEquipo.css"; // Importa el archivo CSS
-import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
+import "./tablaZona.css"; // Importa el archivo CSS
+import FormZona from "../formZonas/formZonas";
 import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
 
-interface equipo {
-  nombre: string;
-  email: string;
-  cedula: number;
-  telefono: string;
-  rol: string;
-  zona: string;
+interface zona {
+  nombreZona: string;
 }
 
-const equipoT: equipo[] = [
+const zonas: zona[] = [
   {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
+    nombreZona: "Bogota",
   },
   {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
+    nombreZona: "Medellin",
   },
   {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
+    nombreZona: "Cali",
   },
   {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
+    nombreZona: "Barranquilla",
   },
   {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
+    nombreZona: "Cartago",
+  },
+  {
+    nombreZona: "Eje Cafetero",
   },
   // Agrega más datos según sea necesario
 ];
 
-const TablaEquipo: React.FC = () => {
+const tablaZona: React.FC = () => {
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedequipo, setSelectedequipo] = useState<equipo | null>(null); // Estado para el roll seleccionado
+  const [selectedzona, setSelectedzona] = useState<zona | null>(null); // Estado para el roll seleccionado
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición o creación
   const navigate = useNavigate(); // Hook para navegación
-  const [showModalequipo, setShowModalequipo] = useState(false);
+  const [showModalzona, setShowModalzona] = useState(false);
 
   // Maneja la edición
-  const handleEdit = (row: equipo) => {
-    setSelectedequipo(row); // Guarda el rol seleccionado para editar
+  const handleEdit = (row: zona) => {
+    setSelectedzona(row); // Guarda el rol seleccionado para editar
     setIsEditing(true); // Activa el modo edición
-    setShowModalequipo(true); // Abre el modal
+    setShowModalzona(true); // Abre el modal
   };
 
   // Maneja la creación de un nuevo rol
   const handleCreate = () => {
-    setSelectedequipo(null); // Resetea el rol seleccionado
+    setSelectedzona(null); // Resetea el rol seleccionado
     setIsEditing(false); // Activa el modo creación
-    setShowModalequipo(true); // Abre el modal
+    setShowModalzona(true); // Abre el modal
   };
 
-  const handleDelete = (row: equipo) => {
+  const handleDelete = (row: zona) => {
     Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el Usuario ${row.nombre}?`,
+      title: `¿Estás seguro de que deseas eliminar la zona ${row.nombreZona}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
@@ -102,7 +75,7 @@ const TablaEquipo: React.FC = () => {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Eliminado",
-          text: `Usuario ${row.nombre} eliminado`,
+          text: `Zona ${row.nombreZona} eliminado`,
           icon: "success",
           confirmButtonText: "OK",
         });
@@ -119,27 +92,22 @@ const TablaEquipo: React.FC = () => {
     navigate("/home"); // Navega a la ruta de inicio
   };
 
-  const handleCloseModalEquipo = () => {
-    setShowModalequipo(false);
+  const handleCloseModalzona = () => {
+    setShowModalzona(false);
   };
 
   // Filtra los datos basado en la búsqueda
-  const filteredEquipo = equipoT.filter((equipo) =>
-    Object.values(equipo).some((value) =>
+  const filteredZona = zonas.filter((zona) =>
+    Object.values(zona).some((value) =>
       value.toLowerCase().includes(search.toLowerCase())
     )
   );
 
   const columns = [
-    { name: "Nombre", selector: (row: equipo) => row.nombre, sortable: true },
-    { name: "Email", selector: (row: equipo) => row.email },
-    { name: "Cedula", selector: (row: equipo) => row.cedula },
-    { name: "Telefono", selector: (row: equipo) => row.telefono },
-    { name: "Rol", selector: (row: equipo) => row.rol },
-    { name: "Zona", selector: (row: equipo) => row.zona },
+    { name: "Nombre", selector: (row: zona) => row.nombreZona, sortable: true },
     {
       name: "Editar",
-      cell: (row: equipo) => (
+      cell: (row: zona) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
@@ -150,7 +118,7 @@ const TablaEquipo: React.FC = () => {
     },
     {
       name: "Eliminar",
-      cell: (row: equipo) => (
+      cell: (row: zona) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -172,8 +140,6 @@ const TablaEquipo: React.FC = () => {
           }`}
         >
           <div className="container mt-4">
-            <h1>Equipo de Trabajo</h1>
-
             <div className="botones">
               <div className="botonR">
                 <button className="btn btn-primary" onClick={handleGoToHome}>
@@ -183,7 +149,7 @@ const TablaEquipo: React.FC = () => {
 
               <div className="botonA">
                 <button onClick={handleCreate} className="btn btn-primary">
-                  <FontAwesomeIcon icon={faPlus} /> Crear Rol
+                  <FontAwesomeIcon icon={faPlus} /> Crear Zona
                 </button>
               </div>
 
@@ -200,7 +166,7 @@ const TablaEquipo: React.FC = () => {
             <div className="table-responsive">
               <DataTable
                 columns={columns}
-                data={filteredEquipo}
+                data={filteredZona}
                 pagination
                 highlightOnHover
                 pointerOnHover
@@ -210,11 +176,11 @@ const TablaEquipo: React.FC = () => {
           </div>
         </main>
       </div>
-      {showModalequipo && (
-        <FormEquipo
-          show={showModalequipo}
-          handleClose={handleCloseModalEquipo}
-          equipo={selectedequipo}
+      {showModalzona && (
+        <FormZona
+          show={showModalzona}
+          handleClose={handleCloseModalzona}
+          roll={selectedzona}
           isEditing={isEditing} // Pasa si está en modo edición o no
         />
       )}
@@ -222,4 +188,4 @@ const TablaEquipo: React.FC = () => {
   );
 };
 
-export default TablaEquipo;
+export default tablaZona;

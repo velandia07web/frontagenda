@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// TablaRoll.tsx
+import React, { useEffect, useState } from "react";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -14,69 +15,84 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaRoll.css"; // Importa el archivo CSS
 import FormRoll from "../formRoll/formRoll";
 import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import {
+  getRoles,
+  createRole,
+  updateRole,
+  deleteRole,
+} from "../../servicios/rol"; // Importa el servicio de roles
 
-interface roll {
-  nombreRoll: string;
+interface Role {
+  id: string;
+  name: string;
 }
-
-const rolles: roll[] = [
-  {
-    nombreRoll: "Super administrador",
-  },
-  {
-    nombreRoll: "Administrador",
-  },
-  {
-    nombreRoll: "Comercial",
-  },
-  {
-    nombreRoll: "Coordinador",
-  },
-  {
-    nombreRoll: "Diseño Grafico",
-  },
-  // Agrega más datos según sea necesario
-];
 
 const TablaRoll: React.FC = () => {
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedRoll, setSelectedRoll] = useState<roll | null>(null); // Estado para el roll seleccionado
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null); // Estado para el rol seleccionado
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición o creación
   const navigate = useNavigate(); // Hook para navegación
-  const [showModalroll, setShowModalroll] = useState(false);
+  const [showModalRole, setShowModalRole] = useState(false);
 
-  // Maneja la edición
-  const handleEdit = (row: roll) => {
-    setSelectedRoll(row); // Guarda el rol seleccionado para editar
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const data = await getRoles();
+        setRoles(data.data); // Asegúrate de que 'data.data' sea el formato correcto
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudieron cargar los roles",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  const handleEdit = (row: Role) => {
+    setSelectedRole(row); // Guarda el rol seleccionado para editar
     setIsEditing(true); // Activa el modo edición
-    setShowModalroll(true); // Abre el modal
+    setShowModalRole(true); // Abre el modal
   };
 
-  // Maneja la creación de un nuevo rol
   const handleCreate = () => {
-    setSelectedRoll(null); // Resetea el rol seleccionado
+    setSelectedRole(null); // Resetea el rol seleccionado
     setIsEditing(false); // Activa el modo creación
-    setShowModalroll(true); // Abre el modal
+    setShowModalRole(true); // Abre el modal
   };
 
-  const handleDelete = (row: roll) => {
+  const handleDelete = async (row: Role) => {
     Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el rol ${row.nombreRoll}?`,
+      title: `¿Estás seguro de que deseas eliminar el rol ${row.name}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result: SweetAlertResult) => {
+    }).then(async (result: SweetAlertResult) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Eliminado",
-          text: `Rol ${row.nombreRoll} eliminado`,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // Implementa la lógica para eliminar el rol del servidor aquí
+        try {
+          await deleteRole(row.id);
+          setRoles((prevRoles) => prevRoles.filter((r) => r.id !== row.id));
+          Swal.fire({
+            title: "Eliminado",
+            text: `Rol ${row.name} eliminado`,
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo eliminar el rol",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
       }
     });
   };
@@ -89,22 +105,66 @@ const TablaRoll: React.FC = () => {
     navigate("/home"); // Navega a la ruta de inicio
   };
 
-  const handleCloseModalroll = () => {
-    setShowModalroll(false);
+  const handleCloseModalRole = () => {
+    setShowModalRole(false);
+  };
+
+  const handleSaveRole = async (role: Role | null) => {
+    if (role) {
+      if (isEditing) {
+        try {
+          await updateRole(role.id, role.name);
+          setRoles((prevRoles) =>
+            prevRoles.map((r) => (r.id === role.id ? role : r))
+          );
+          Swal.fire({
+            title: "Actualizado",
+            text: `Rol ${role.name} actualizado`,
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo actualizar el rol",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      } else {
+        try {
+          await createRole(role.name);
+          const data = await getRoles();
+          setRoles(data.data); // Recargar roles después de la creación
+          Swal.fire({
+            title: "Creado",
+            text: `Rol ${role.name} creado`,
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo crear el rol",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+    }
+    setShowModalRole(false);
   };
 
   // Filtra los datos basado en la búsqueda
-  const filteredroll = rolles.filter((roll) =>
-    Object.values(roll).some((value) =>
-      value.toLowerCase().includes(search.toLowerCase())
-    )
+  const filteredRoles = roles.filter((role) =>
+    role.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
-    { name: "Nombre", selector: (row: roll) => row.nombreRoll, sortable: true },
+    { name: "Nombre", selector: (row: Role) => row.name, sortable: true },
     {
       name: "Editar",
-      cell: (row: roll) => (
+      cell: (row: Role) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
@@ -115,7 +175,7 @@ const TablaRoll: React.FC = () => {
     },
     {
       name: "Eliminar",
-      cell: (row: roll) => (
+      cell: (row: Role) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -163,7 +223,7 @@ const TablaRoll: React.FC = () => {
             <div className="table-responsive">
               <DataTable
                 columns={columns}
-                data={filteredroll}
+                data={filteredRoles}
                 pagination
                 highlightOnHover
                 pointerOnHover
@@ -173,12 +233,13 @@ const TablaRoll: React.FC = () => {
           </div>
         </main>
       </div>
-      {showModalroll && (
+      {showModalRole && (
         <FormRoll
-          show={showModalroll}
-          handleClose={handleCloseModalroll}
-          roll={selectedRoll}
+          show={showModalRole}
+          handleClose={handleCloseModalRole}
+          role={selectedRole}
           isEditing={isEditing} // Pasa si está en modo edición o no
+          onSave={handleSaveRole} // Función para guardar el rol
         />
       )}
     </div>

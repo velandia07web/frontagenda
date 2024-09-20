@@ -13,10 +13,11 @@ import {
 import "./SlideMenu.css";
 import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
 import FormClientes from "../formClientes/formClientes";
-import FormCiudades from "../formCiudades/formCiudades";
+import FormCiudad from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
 import FormRoll from "../formRoll/formRoll";
 import FormRed from "../formRedSocial/formRedSocial";
+import FormZona from "../formZonas/formZonas";
 import { useNavigate } from "react-router-dom"; // Importar useNavigate
 
 interface SlideMenuProps {
@@ -36,8 +37,9 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   const [showModalroll, setShowModalroll] = useState(false);
   const [showModalEquipo, setShowModalEquipo] = useState(false);
   const [showModalRed, setShowModalRed] = useState(false);
+  const [showModalZona, setShowModalZona] = useState(false);
+  const [showModalCiudad, setShowModalCiudad] = useState(false);
   const [showModalClientes, setShowModalClientes] = useState(false);
-  const [showModalCiudades, setShowModalCiudades] = useState(false);
   const [showModalInventario, setShowModalInventario] = useState(false);
 
   const toggleMenu = () => {
@@ -67,15 +69,23 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
 
   // constane para navegar en las tablas y vistas al dar click en slide
   const handleNavigateToTablaRoll = () => {
-    navigate("/roll"); // Redirige a la vista de Tabla Roll
+    navigate("/roll"); // Redirige a la vista de Tabla
   };
 
   const handleNavigateToTablaequipo = () => {
-    navigate("/equipo"); // Redirige a la vista de Tabla Roll
+    navigate("/equipo"); // Redirige a la vista de Tabla
   };
 
   const handleNavigateToTablaRed = () => {
-    navigate("/red"); // Redirige a la vista de Tabla Roll
+    navigate("/red"); // Redirige a la vista de Tabla
+  };
+
+  const handleNavigateToTablaZona = () => {
+    navigate("/zona"); // Redirige a la vista de Tabla
+  };
+
+  const handleNavigateToTablaCiudad = () => {
+    navigate("/ciudad"); // Redirige a la vista de Tabla
   };
 
   const handleNavigateToTablaclientes = () => {
@@ -91,11 +101,27 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   const [isEditingequipo, setIsEditingequipo] = useState(false);
   const [selectedequipo, setSelectedequipo] = useState<{
     nombre: string;
+    email: string;
+    cedula: number;
+    telefono: string;
+    rol: string;
+    zona: string;
   } | null>(null);
 
   const [isEditingRed, setIsEditingRed] = useState(false);
   const [selectedRed, setSelectedRed] = useState<{
     nombreRed: string;
+  } | null>(null);
+
+  const [isEditingZona, setIsEditingZona] = useState(false);
+  const [selectedZona, setSelectedZona] = useState<{
+    nombreZona: string;
+  } | null>(null);
+
+  const [isEditingCiudad, setIsEditingCiudad] = useState(false);
+  const [selectedCiudad, setSelectedCiudad] = useState<{
+    nombreCiudad: string;
+    nombreZona: string;
   } | null>(null);
 
   // logica modal de formularios roll
@@ -135,10 +161,32 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setSelectedRed(null); // Resetea el rol seleccionado
   };
 
+  // modal Zona
+  const handleOpenCreateZonaModal = () => {
+    setSelectedZona(null); // No hay rol seleccionado, es un nuevo rol
+    setIsEditingZona(false); // No estamos editando
+    setShowModalZona(true); // Abre el modal
+  };
+  const handleCloseModalZona = () => {
+    setShowModalZona(false); // Cierra el modal
+    setIsEditingZona(false); // Resetea el modo edición
+    setSelectedZona(null); // Resetea el rol seleccionado
+  };
+
+  // modal ciudad
+  const handleOpenCreateCiudadModal = () => {
+    setSelectedCiudad(null); // No hay rol seleccionado, es un nuevo rol
+    setIsEditingCiudad(false); // No estamos editando
+    setShowModalCiudad(true); // Abre el modal
+  };
+  const handleCloseModalCiudad = () => {
+    setShowModalCiudad(false); // Cierra el modal
+    setIsEditingCiudad(false); // Resetea el modo edición
+    setSelectedCiudad(null); // Resetea el rol seleccionado
+  };
+
   const handleOpenModalClientes = () => setShowModalClientes(true);
   const handleCloseModalClientes = () => setShowModalClientes(false);
-  const handleOpenModalCiudades = () => setShowModalCiudades(true);
-  const handleCloseModalCiudades = () => setShowModalCiudades(false);
   const handleOpenModalInventario = () => setShowModalInventario(true);
   const handleCloseModalInventario = () => setShowModalInventario(false);
 
@@ -192,21 +240,26 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <FontAwesomeIcon icon={faMinus} /> Crear Roll
                   </li>
 
-                  <li onClick={handleOpenCreateequipoModal}>
-                    <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
-                  </li>
-
                   <li onClick={handleOpenCreateRedModal}>
                     <FontAwesomeIcon icon={faMinus} /> Crear Red De Conexion
+                  </li>
+
+                  <li onClick={handleOpenCreateZonaModal}>
+                    <FontAwesomeIcon icon={faMinus} /> Crear Zona
+                  </li>
+
+                  <li onClick={handleOpenCreateCiudadModal}>
+                    <FontAwesomeIcon icon={faMinus} /> Ciudades
+                  </li>
+
+                  <li onClick={handleOpenCreateequipoModal}>
+                    <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
                   </li>
 
                   <li onClick={handleOpenModalClientes}>
                     <FontAwesomeIcon icon={faMinus} /> Clientes
                   </li>
 
-                  <li onClick={handleOpenModalCiudades}>
-                    <FontAwesomeIcon icon={faMinus} /> Ciudades
-                  </li>
                   <li onClick={handleOpenModalInventario}>
                     <FontAwesomeIcon icon={faMinus} /> Inventario
                   </li>
@@ -269,22 +322,29 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <span>Tabla Roll</span>
                   </li>
 
+                  <li onClick={handleNavigateToTablaRed}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Red De Conexion</span>
+                  </li>
+
+                  <li onClick={handleNavigateToTablaZona}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Zonas</span>
+                  </li>
+
+                  <li onClick={handleNavigateToTablaCiudad}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Ciudad</span>
+                  </li>
+
                   <li onClick={handleNavigateToTablaequipo}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Equipo de Trabajo</span>
                   </li>
 
-                  <li onClick={handleNavigateToTablaRed}>
-                    <FontAwesomeIcon icon={faMinus} />
-                    <span>Red De Conexion</span>
-                  </li>
                   <li onClick={handleNavigateToTablaclientes}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Clientes</span>
-                  </li>
-                  <li>
-                    <FontAwesomeIcon icon={faMinus} />
-                    <span>Precios con ciudades</span>
                   </li>
                   <li>
                     <FontAwesomeIcon icon={faMinus} />
@@ -315,7 +375,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         <FormEquipo
           show={showModalEquipo}
           handleClose={handleCloseModalequipo}
-          roll={selectedequipo} // Pasa el rol seleccionado o null
+          equipo={selectedequipo} // Pasa el rol seleccionado o null
           isEditing={isEditingequipo} // Pasa si estamos editando o creando
         />
       )}
@@ -329,18 +389,31 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         />
       )}
 
+      {showModalZona && (
+        <FormZona
+          show={showModalZona}
+          handleClose={handleCloseModalZona}
+          roll={selectedZona} // Pasa el rol seleccionado o null
+          isEditing={isEditingZona} // Pasa si estamos editando o creando
+        />
+      )}
+
+      {showModalCiudad && (
+        <FormCiudad
+          show={showModalCiudad}
+          handleClose={handleCloseModalCiudad}
+          ciudad={selectedCiudad} // Pasa el rol seleccionado o null
+          isEditing={isEditingCiudad} // Pasa si estamos editando o creando
+        />
+      )}
+
       {showModalClientes && (
         <FormClientes
           show={showModalClientes}
           handleClose={handleCloseModalClientes}
         />
       )}
-      {showModalCiudades && (
-        <FormCiudades
-          show={showModalCiudades}
-          handleClose={handleCloseModalCiudades}
-        />
-      )}
+
       {showModalInventario && (
         <FormInventario
           show={showModalInventario}

@@ -126,3 +126,20 @@ html {
 .forgot-password:hover {
   color: #20201d;
 }
+
+.forgot-password {
+  background: none;
+  border: none;
+  color: #007072;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease-in-out;
+  margin-top: 10px;
+}
+
+/* Efecto hover profesional */
+.forgot-password:hover {
+  color: #005f5f;
+  transform: scale(1.05);
+}
