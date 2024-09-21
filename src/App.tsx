@@ -40,7 +40,10 @@ function App() {
         {/* Ruta para la tabla de equipo */}
         <Route path="/ciudad" element={<TablaCiudades />} />
         {/* Nueva ruta para el cambio de contraseña */}
-        <Route path="/cambio-contrasena" element={<CambioContrasena />} />
+        <Route
+          path="/cambio-contrasena/:token"
+          element={<CambioContrasena />}
+        />
       </Routes>
     </Router>
   );
