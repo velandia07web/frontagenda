@@ -1,3 +1,4 @@
+//funcion para cerrar sesion
 export const logout = async (): Promise<boolean> => {
   try {
     // Supongamos que tienes el ID del usuario almacenado en el token o localStorage.
@@ -33,5 +34,51 @@ export const logout = async (): Promise<boolean> => {
   } catch (error) {
     console.error("Error en la solicitud de cierre de sesión", error);
     return false;
+  }
+};
+
+//funcion para iniciar sesion
+export const loginUser = async (email: string, password: string) => {
+  try {
+    const response = await fetch("http://localhost:3310/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      return { success: false, error: "Error al autenticar usuario" };
+    }
+  } catch (error) {
+    return { success: false, error: "Hubo un problema con el servidor" };
+  }
+};
+
+//funcion para mensaje cambio contrseña
+export const forgotPassword = async (email: string) => {
+  try {
+    const response = await fetch("http://localhost:3310/api/auth/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (response.ok) {
+      return { success: true, message: "Correo enviado" };
+    } else {
+      return {
+        success: false,
+        error: "No se pudo enviar el correo de recuperación",
+      };
+    }
+  } catch (error) {
+    return { success: false, error: "Hubo un problema con el servidor" };
   }
 };

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // Importar SweetAlert2
+import Swal from "sweetalert2";
+import { loginUser, forgotPassword } from "../../servicios/authService"; // Importar funciones del servicio
 import "./styles.css";
 
 const LoginForm: React.FC = () => {
@@ -9,41 +10,20 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  // Función para enviar el loginºº
+  // Función para enviar el login
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:3310/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("userId", data.data.user.id);
-
-        navigate("/home");
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error al autenticar usuario",
-          confirmButtonColor: "#007072",
-        });
-      }
-    } catch (error) {
+    const result = await loginUser(email, password);
+    if (result.success) {
+      localStorage.setItem("token", result.data.data.token);
+      localStorage.setItem("userId", result.data.data.user.id);
+      navigate("/home");
+    } else {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Hubo un problema con el servidor. Inténtalo de nuevo.",
+        text: result.error || "Error al autenticar usuario",
         confirmButtonColor: "#007072",
       });
     }
@@ -69,37 +49,19 @@ const LoginForm: React.FC = () => {
     });
 
     if (email) {
-      try {
-        const response = await fetch("http://localhost:3310/api/auth/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email, // Se envía el correo ingresado
-          }),
+      const result = await forgotPassword(email);
+      if (result.success) {
+        Swal.fire({
+          title: "Correo enviado",
+          text: "Revisa tu bandeja de entrada para continuar con la recuperación de tu contraseña.",
+          icon: "success",
+          confirmButtonColor: "#007072",
         });
-
-        if (response.ok) {
-          Swal.fire({
-            title: "Correo enviado",
-            text: "Revisa tu bandeja de entrada para continuar con la recuperación de tu contraseña.",
-            icon: "success",
-            confirmButtonColor: "#007072",
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "No se pudo enviar el correo de recuperación.",
-            confirmButtonColor: "#007072",
-          });
-        }
-      } catch (error) {
+      } else {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Hubo un problema con el servidor. Inténtalo de nuevo.",
+          text: result.error || "No se pudo enviar el correo de recuperación.",
           confirmButtonColor: "#007072",
         });
       }
@@ -114,7 +76,7 @@ const LoginForm: React.FC = () => {
         <div className="input-group">
           <FaUser className="input-icon" />
           <input
-            type="email" // Input de tipo email
+            type="email"
             placeholder="Correo electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -137,7 +99,6 @@ const LoginForm: React.FC = () => {
           Entrar
         </button>
 
-        {/* Botón para abrir la recuperación de contraseña */}
         <button
           type="button"
           className="forgot-password"
