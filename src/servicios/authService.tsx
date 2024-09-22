@@ -82,3 +82,31 @@ export const forgotPassword = async (email: string) => {
     return { success: false, error: "Hubo un problema con el servidor" };
   }
 };
+
+//funcion cambio contraseña
+export const cambiarContraseña = async (
+  token: string,
+  password: string,
+  verifyPassword: string
+) => {
+  try {
+    const response = await fetch(
+      `http://localhost:3310/api/auth/resetPassword/${token}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password, verifyPassword }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Error al cambiar la contraseña.");
+    }
+
+    return response.json(); // Puedes manejar la respuesta como necesites
+  } catch (error) {
+    throw error; // Lanza el error para que sea capturado en el componente
+  }
+};

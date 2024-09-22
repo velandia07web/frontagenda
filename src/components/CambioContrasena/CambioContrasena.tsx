@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { cambiarContraseña } from "../../servicios/authService"; // Importar la función de auth.ts
 import "./cambioContrasena.css";
 
 const CambioContraseña: React.FC = () => {
@@ -10,13 +11,12 @@ const CambioContraseña: React.FC = () => {
   const [verifyPassword, setVerifyPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>(""); // Mensaje de éxito
-  const [errorMessage, setErrorMessage] = useState<string>(""); // Mensaje de error
-  const [passwordError, setPasswordError] = useState<string>(""); // Error de validación de contraseña
-  const navigate = useNavigate(); // Inicializa el hook de navegación
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const navigate = useNavigate();
   const passwordsMatch = password === verifyPassword && password.length > 0;
 
-  // Expresión regular para validar la contraseña
   const validatePassword = (password: string) => {
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]{8,}$/;
@@ -31,13 +31,11 @@ const CambioContraseña: React.FC = () => {
     }
   };
 
-  // Función para manejar el cambio en el campo de contraseña
   const handlePasswordChangeInput = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-    // Validar la contraseña
     const validationError = validatePassword(newPassword);
     setPasswordError(validationError);
   };
@@ -51,36 +49,20 @@ const CambioContraseña: React.FC = () => {
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault(); // Previene el comportamiento por defecto del formulario
+    e.preventDefault();
 
-    // Función para manejar el cambio de contraseña
-    //const handlePasswordChange = async () => {
     if (!passwordError && passwordsMatch) {
       try {
-        const response = await fetch(
-          `http://localhost:3310/api/auth/resetPassword/${token}`, // Reemplaza TOKEN con el token válido
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ password, verifyPassword }), // Enviamos la nueva contraseña en el cuerpo de la solicitud
-          }
-        );
-
-        if (response.ok) {
-          setSuccessMessage("Contraseña cambiada con éxito.");
-          setErrorMessage(""); // Limpia cualquier mensaje de error
-          // Redirige a la raíz después de un breve tiempo
-          setTimeout(() => {
-            navigate("/"); // Redirige a la página de inicio
-          }, 1500); // 1.5segundos de retraso antes de redirigir (opcional)
-        } else {
-          setErrorMessage("Error al cambiar la contraseña.");
-          setSuccessMessage(""); // Limpia cualquier mensaje de éxito
-        }
+        await cambiarContraseña(token || "", password, verifyPassword);
+        setSuccessMessage("Contraseña cambiada con éxito.");
+        setErrorMessage("");
+        setTimeout(() => {
+          navigate("/"); // Redirige a la página de inicio después de 1.5 segundos
+        }, 1500);
       } catch (error) {
-        setErrorMessage("Error en la solicitud. Inténtalo de nuevo.");
+        setErrorMessage(
+          "Error al cambiar la contraseña. Inténtalo de nuevo más tarde."
+        );
         setSuccessMessage("");
       }
     }
