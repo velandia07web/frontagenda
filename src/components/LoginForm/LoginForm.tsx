@@ -9,7 +9,7 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  // Función para enviar el login
+  // Función para enviar el loginºº
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

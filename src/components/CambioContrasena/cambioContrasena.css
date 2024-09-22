@@ -1,5 +1,14 @@
 /* Estilos para el contenedor general del formulario */
 .cambio-container {
+  background: linear-gradient(135deg, #007072 50%, #20201d 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+.passwor-form {
   background: #ffffff; /* Formulario en blanco para destacar sobre el fondo */
   padding: 40px;
   border-radius: 15px;
@@ -11,14 +20,6 @@
 }
 
 /* Fondo de pantalla con gradiente */
-body {
-  background: linear-gradient(135deg, #007072 50%, #20201d 100%);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-}
 
 .form-title {
   text-align: center;

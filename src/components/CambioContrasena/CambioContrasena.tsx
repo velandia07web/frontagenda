@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "./styles.css";
+import "./cambioContrasena.css";
 
 const CambioContraseña: React.FC = () => {
   const { token } = useParams<{ token: string }>();
@@ -50,8 +50,11 @@ const CambioContraseña: React.FC = () => {
     setShowVerifyPassword(!showVerifyPassword);
   };
 
-  // Función para manejar el cambio de contraseña
-  const handlePasswordChange = async () => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault(); // Previene el comportamiento por defecto del formulario
+
+    // Función para manejar el cambio de contraseña
+    //const handlePasswordChange = async () => {
     if (!passwordError && passwordsMatch) {
       try {
         const response = await fetch(
@@ -85,68 +88,69 @@ const CambioContraseña: React.FC = () => {
 
   return (
     <div className="cambio-container">
-      <h2 className="form-title">Cambiar Contraseña</h2>
+      <form className="passwor-form" onSubmit={handlePasswordChange}>
+        <h2 className="form-title">Cambiar Contraseña</h2>
 
-      <div className="input-group">
-        <label htmlFor="password">Nueva Contraseña</label>
-        <div className="password-wrapper">
-          <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={handlePasswordChangeInput}
-            className={`input-field ${passwordsMatch ? "match" : ""} ${
-              password && !passwordsMatch ? "no-match" : ""
-            }`}
-            required
-            placeholder="Ingresa Nueva Contraseña"
-            onPaste={(e) => e.preventDefault()} // Prevenir pegar en este campo
-          />
-          <span
-            className="password-toggle-icon"
-            onClick={togglePasswordVisibility}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
+        <div className="input-group">
+          <label htmlFor="password">Nueva Contraseña</label>
+          <div className="password-wrapper">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={handlePasswordChangeInput}
+              className={`input-field ${passwordsMatch ? "match" : ""} ${
+                password && !passwordsMatch ? "no-match" : ""
+              }`}
+              required
+              placeholder="Ingresa Nueva Contraseña"
+              onPaste={(e) => e.preventDefault()} // Prevenir pegar en este campo
+            />
+            <span
+              className="password-toggle-icon"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+          {passwordError && <p className="error-message">{passwordError}</p>}
         </div>
-        {passwordError && <p className="error-message">{passwordError}</p>}
-      </div>
 
-      <div className="input-group">
-        <label htmlFor="verify-password">Verificar Contraseña</label>
-        <div className="password-wrapper">
-          <input
-            id="verifypassword"
-            type={showVerifyPassword ? "text" : "password"}
-            value={verifyPassword}
-            onChange={(e) => setVerifyPassword(e.target.value)}
-            className={`input-field ${passwordsMatch ? "match" : ""} ${
-              verifyPassword && !passwordsMatch ? "no-match" : ""
-            }`}
-            required
-            placeholder="Repite Contraseña"
-            onPaste={(e) => e.preventDefault()} // Prevenir pegar en este campo
-          />
-          <span
-            className="password-toggle-icon"
-            onClick={toggleVerifyPasswordVisibility}
-          >
-            {showVerifyPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
+        <div className="input-group">
+          <label htmlFor="verify-password">Verificar Contraseña</label>
+          <div className="password-wrapper">
+            <input
+              id="verifypassword"
+              type={showVerifyPassword ? "text" : "password"}
+              value={verifyPassword}
+              onChange={(e) => setVerifyPassword(e.target.value)}
+              className={`input-field ${passwordsMatch ? "match" : ""} ${
+                verifyPassword && !passwordsMatch ? "no-match" : ""
+              }`}
+              required
+              placeholder="Repite Contraseña"
+              onPaste={(e) => e.preventDefault()} // Prevenir pegar en este campo
+            />
+            <span
+              className="password-toggle-icon"
+              onClick={toggleVerifyPasswordVisibility}
+            >
+              {showVerifyPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
         </div>
-      </div>
 
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      <button
-        type="submit"
-        className="submit-button"
-        disabled={!passwordsMatch || passwordError !== ""}
-        onClick={handlePasswordChange} // Llamamos a la función de cambio de contraseña
-      >
-        Cambiar Contraseña
-      </button>
+        <button
+          type="submit"
+          className="submit-button"
+          disabled={!passwordsMatch || passwordError !== ""}
+        >
+          Cambiar Contraseña
+        </button>
+      </form>
     </div>
   );
 };
