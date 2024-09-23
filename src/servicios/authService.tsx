@@ -1,3 +1,4 @@
+const port = import.meta.env.VITE_API_BASE_URL;
 //funcion para cerrar sesion
 export const logout = async (): Promise<boolean> => {
   try {
@@ -5,15 +6,17 @@ export const logout = async (): Promise<boolean> => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId"); // Aquí deberías obtener el id del usuario
     console.log(userId);
+    console.log("hola", import.meta.env.VITE_API_BASE_URL);
 
     if (!token || !userId) {
       console.error(
         "No se encontró el token de autenticación o el ID del usuario."
       );
+
       return false;
     }
 
-    const response = await fetch(`http://localhost:3310/api/auth/${userId}`, {
+    const response = await fetch(`${port}/auth/${userId}`, {
       // Incluye el ID en la URL
       method: "POST",
       credentials: "include",
@@ -40,7 +43,7 @@ export const logout = async (): Promise<boolean> => {
 //funcion para iniciar sesion
 export const loginUser = async (email: string, password: string) => {
   try {
-    const response = await fetch("http://localhost:3310/api/auth/login", {
+    const response = await fetch(`${port}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +65,7 @@ export const loginUser = async (email: string, password: string) => {
 //funcion para mensaje cambio contrseña
 export const forgotPassword = async (email: string) => {
   try {
-    const response = await fetch("http://localhost:3310/api/auth/", {
+    const response = await fetch(`${port}/auth/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -90,16 +93,13 @@ export const cambiarContraseña = async (
   verifyPassword: string
 ) => {
   try {
-    const response = await fetch(
-      `http://localhost:3310/api/auth/resetPassword/${token}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password, verifyPassword }),
-      }
-    );
+    const response = await fetch(`${port}/auth/resetPassword/${token}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password, verifyPassword }),
+    });
 
     if (!response.ok) {
       throw new Error("Error al cambiar la contraseña.");
