@@ -1,76 +1,68 @@
-// roleService.ts
-const API_URL = "http://localhost:3310/api/rol"; // URL del backend
+// rolService.ts
+const port = import.meta.env.VITE_API_BASE_URL; // Asegúrate de que esta variable esté definida en tu archivo .env
 
-const handleResponse = async (response: Response) => {
-  if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(errorMessage || "Error en la solicitud");
-  }
-  return response.json();
-};
+// Tipo para los roles (ajusta los campos según tu modelo)
+interface Role {
+  id: string; // Cambia a string si tus IDs son de tipo UUID
+  name: string;
+}
 
-// Obtener todos los roles
-export const getRoles = async () => {
+// Tipo para la respuesta de la API
+interface RolesResponse {
+  status: number;
+  message: string;
+  data: {
+    count: number;
+    rows: Role[];
+  };
+}
+
+// Función para obtener todos los roles
+export const getAllRoles = async (): Promise<RolesResponse> => {
   try {
-    const response = await fetch(`${API_URL}`, {
+    const token = localStorage.getItem("token"); // Obtén el token del localStorage
+
+    const response = await fetch(`${port}/rol`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Agrega el token aquí
       },
     });
-    return handleResponse(response);
+
+    if (!response.ok) {
+      throw new Error("Error al obtener los roles");
+    }
+
+    const data: RolesResponse = await response.json();
+    return data; // Devuelve la respuesta completa
   } catch (error) {
-    console.error("Error al obtener los roles:", error);
-    throw error;
+    console.error(error);
+    throw error; // Maneja el error según tus necesidades
   }
 };
 
-// Crear un nuevo rol
-export const createRole = async (name: string) => {
+// Función para obtener un rol específico
+export const getRoleById = async (id: string): Promise<Role> => {
   try {
-    const response = await fetch(`${API_URL}/roles`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name }),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Error al crear el rol:", error);
-    throw error;
-  }
-};
+    const token = localStorage.getItem("token"); // Obtén el token del localStorage
 
-// Actualizar un rol existente
-export const updateRole = async (id: string, name: string) => {
-  try {
-    const response = await fetch(`${API_URL}/roles/${id}`, {
-      method: "PUT",
+    const response = await fetch(`${port}/rol/${id}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Agrega el token aquí
       },
-      body: JSON.stringify({ name }),
     });
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Error al actualizar el rol:", error);
-    throw error;
-  }
-};
 
-// Eliminar un rol
-export const deleteRole = async (id: string) => {
-  try {
-    const response = await fetch(`${API_URL}/roles/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return handleResponse(response);
+    if (!response.ok) {
+      throw new Error("Error al obtener el rol");
+    }
+
+    const data = await response.json();
+    return data; // Retorna el rol encontrado
   } catch (error) {
-    console.error("Error al eliminar el rol:", error);
-    throw error;
+    console.error(error);
+    throw error; // Maneja el error según tus necesidades
   }
 };

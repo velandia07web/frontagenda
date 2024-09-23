@@ -15,7 +15,7 @@ import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
 import FormClientes from "../formClientes/formClientes";
 import FormCiudad from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
-import FormRoll from "../formRoll/formRoll";
+//import FormRoll from "../formRoll/formRoll";
 import FormRed from "../formRedSocial/formRedSocial";
 import FormZona from "../formZonas/formZonas";
 import { useNavigate } from "react-router-dom"; // Importar useNavigate
@@ -34,7 +34,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   });
   const navigate = useNavigate();
 
-  const [showModalroll, setShowModalroll] = useState(false);
+  /* const [showModalroll, setShowModalroll] = useState(false); */
   const [showModalEquipo, setShowModalEquipo] = useState(false);
   const [showModalRed, setShowModalRed] = useState(false);
   const [showModalZona, setShowModalZona] = useState(false);
@@ -92,11 +92,11 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     navigate("/clientes"); // Redirige a la vista de Tabla Roll
   };
 
-  // logica para recibir datos al modal
+  /* // logica para recibir datos al modal
   const [isEditingRoll, setIsEditingRoll] = useState(false);
   const [selectedRoll, setSelectedRoll] = useState<{
     nombreRoll: string;
-  } | null>(null);
+  } | null>(null); */
 
   const [isEditingequipo, setIsEditingequipo] = useState(false);
   const [selectedequipo, setSelectedequipo] = useState<{
@@ -125,7 +125,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   } | null>(null);
 
   // logica modal de formularios roll
-  const handleOpenCreateRollModal = () => {
+  /* const handleOpenCreateRollModal = () => {
     setSelectedRoll(null); // No hay rol seleccionado, es un nuevo rol
     setIsEditingRoll(false); // No estamos editando
     setShowModalroll(true); // Abre el modal
@@ -135,7 +135,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setShowModalroll(false); // Cierra el modal
     setIsEditingRoll(false); // Resetea el modo edición
     setSelectedRoll(null); // Resetea el rol seleccionado
-  };
+  }; */
 
   // modal equipo trabajo
   const handleOpenCreateequipoModal = () => {
@@ -236,9 +236,9 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
               </div>
               {isSubMenuOpen.formularios && (isExpanded || isHovered) && (
                 <ul className="submenu">
-                  <li onClick={handleOpenCreateRollModal}>
+                  {/* <li onClick={handleOpenCreateRollModal}>
                     <FontAwesomeIcon icon={faMinus} /> Crear Roll
-                  </li>
+                  </li> */}
 
                   <li onClick={handleOpenCreateRedModal}>
                     <FontAwesomeIcon icon={faMinus} /> Crear Red De Conexion
@@ -361,7 +361,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         </div>
       </div>
 
-      {/* logica modales close */}
+      {/* logica modales close 
       {showModalroll && (
         <FormRoll
           show={showModalroll}
@@ -369,7 +369,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
           roll={selectedRoll} // Pasa el rol seleccionado o null
           isEditing={isEditingRoll} // Pasa si estamos editando o creando
         />
-      )}
+      )}*/}
 
       {showModalEquipo && (
         <FormEquipo
