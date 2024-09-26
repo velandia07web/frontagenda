@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { loginUser, forgotPassword } from "../../servicios/authService"; // Importar funciones del servicio
 import "./styles.css";
+import { useAuth } from "../../components/context/AuthContext";
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string>(""); // Campo de email para login
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // Acceder a la función de login del contexto
 
   // Función para enviar el login
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,8 +18,16 @@ const LoginForm: React.FC = () => {
 
     const result = await loginUser(email, password);
     if (result.success) {
+      const userData = {
+        id: result.data.data.user.id, // Asegúrate de que el ID esté en la respuesta
+        username: result.data.data.user.fullName, // Asegúrate de que el nombre de usuario esté en la respuesta
+        role: result.data.data.user.idRol, // Asegúrate de que el rol esté en la respuesta
+      };
+
+      login(userData);
       localStorage.setItem("token", result.data.data.token);
       localStorage.setItem("userId", result.data.data.user.id);
+      localStorage.setItem("rol", result.data.data.user.idRol);
       navigate("/home");
     } else {
       Swal.fire({

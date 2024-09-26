@@ -14,7 +14,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaClientes.css"; // Importa el archivo CSS
 import FormClientes from "../formClientes/formClientes";
 import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import styled from "styled-components";
 
+const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
+  // Aquí van tus estilos personalizados
+`;
 interface Cliente {
   nombre: string;
   cedula: string;
@@ -209,8 +213,8 @@ const TablaClientes: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      /* allowOverflow: true,
+      button: true, */
     },
     {
       name: "Eliminar",
@@ -220,8 +224,8 @@ const TablaClientes: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      /* allowOverflow: true,
+      button: true, */
     },
   ];
 
@@ -263,7 +267,7 @@ const TablaClientes: React.FC = () => {
               </div>
             </div>
             <div className="table-responsive">
-              <DataTable
+              <StyledDataTable
                 columns={columns}
                 data={filteredClientes}
                 pagination

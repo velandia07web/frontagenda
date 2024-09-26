@@ -14,6 +14,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaEquipo.css"; // Importa el archivo CSS
 import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
 import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import styled from "styled-components";
+
+const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
+  // Aquí van tus estilos personalizados
+`;
 
 interface equipo {
   nombre: string;
@@ -90,6 +95,7 @@ const TablaEquipo: React.FC = () => {
     setShowModalequipo(true); // Abre el modal
   };
 
+  // Maneja la eliminación de un equipo
   const handleDelete = (row: equipo) => {
     Swal.fire({
       title: `¿Estás seguro de que deseas eliminar el Usuario ${row.nombre}?`,
@@ -126,7 +132,7 @@ const TablaEquipo: React.FC = () => {
   // Filtra los datos basado en la búsqueda
   const filteredEquipo = equipoT.filter((equipo) =>
     Object.values(equipo).some((value) =>
-      value.toLowerCase().includes(search.toLowerCase())
+      String(value).toLowerCase().includes(search.toLowerCase())
     )
   );
 
@@ -145,8 +151,8 @@ const TablaEquipo: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      /* allowOverflow: true,
+      button: true, */
     },
     {
       name: "Eliminar",
@@ -156,8 +162,8 @@ const TablaEquipo: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      /*  allowOverflow: true, */
+      /* button: true, */
     },
   ];
 
@@ -198,7 +204,7 @@ const TablaEquipo: React.FC = () => {
               </div>
             </div>
             <div className="table-responsive">
-              <DataTable
+              <StyledDataTable
                 columns={columns}
                 data={filteredEquipo}
                 pagination

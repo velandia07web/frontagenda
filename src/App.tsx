@@ -12,40 +12,51 @@ import TablaRed from "./components/tablaRedSocial/RedSocial";
 import TablaZona from "./components/tablaZona/tablaZona";
 import TablaCiudades from "./components/tablaCiudades/tablaCiudades";
 import CambioContrasena from "./components/CambioContrasena/CambioContrasena";
+import PrivateRoute from "./components/auth/privateRoute"; // Importa tu PrivateRoute
+import { AuthProvider } from "./components/context/AuthContext"; // Asegúrate de importar tu AuthProvider
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Ruta para el formulario de login */}
-        <Route path="/" element={<LoginForm />} />
+    <AuthProvider>
+      {" "}
+      {/* Asegúrate de que el AuthProvider envuelva el Router */}
+      <Router>
+        <Routes>
+          {/* Ruta para el formulario de login */}
+          <Route path="/" element={<LoginForm />} />
 
-        {/* Ruta para la página principal */}
-        <Route path="/home" element={<HomePage />} />
+          {/* Rutas protegidas para el superadministrador */}
+          <Route
+            element={
+              <PrivateRoute
+                allowedRoles={["e2f26662-950f-4c66-895e-7c34bf74f2d8"]}
+              />
+            }
+          >
+            {/* Ruta para la página principal */}
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/clientes" element={<TablaClientes />} />
+            <Route path="/roll" element={<TablaRoll />} />
+            <Route path="/equipo" element={<TablaEquipo />} />
+            <Route path="/red" element={<TablaRed />} />
+            <Route path="/zona" element={<TablaZona />} />
+            <Route path="/ciudad" element={<TablaCiudades />} />
+          </Route>
 
-        {/* Ruta para la tabla de clientes */}
-        <Route path="/clientes" element={<TablaClientes />} />
+          {/* Rutas protegidas para el comercial */}
+          <Route element={<PrivateRoute allowedRoles={[""]} />}>
+            {/* Agrega aquí las rutas que el comercial puede ver */}
+            <Route path="/clientes" element={<TablaClientes />} />
+            <Route path="/roll" element={<TablaRoll />} />
+          </Route>
 
-        {/* Ruta para la tabla de roll */}
-        <Route path="/roll" element={<TablaRoll />} />
-
-        {/* Ruta para la tabla de equipo */}
-        <Route path="/equipo" element={<TablaEquipo />} />
-
-        {/* Ruta para la tabla de equipo */}
-        <Route path="/red" element={<TablaRed />} />
-
-        {/* Ruta para la tabla de equipo */}
-        <Route path="/zona" element={<TablaZona />} />
-
-        {/* Ruta para la tabla de equipo */}
-        <Route path="/ciudad" element={<TablaCiudades />} />
-        {/* Nueva ruta para el cambio de contraseña */}
-        <Route
-          path="/cambio-contrasena/:token"
-          element={<CambioContrasena />}
-        />
-      </Routes>
-    </Router>
+          {/* Nueva ruta para el cambio de contraseña */}
+          <Route
+            path="/cambio-contrasena/:token"
+            element={<CambioContrasena />}
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
