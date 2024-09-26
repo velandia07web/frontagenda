@@ -1,40 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { Zone } from "../../servicios/zone"; // Importa la interfaz de Zone
 
 interface FormZonaProps {
   show: boolean;
   handleClose: () => void;
-  roll: { nombreZona: string } | null; // El rol seleccionado, o null si es un nuevo rol
-  isEditing: boolean; // Si estamos en modo edición o no
+  selectedZone: Zone | null; // Zona seleccionada o null
+  isEditing: boolean; // Bandera para saber si es edición
+  onSubmit: (zone: Zone) => Promise<void>; // Función para enviar el formulario
 }
 
 const FormZona: React.FC<FormZonaProps> = ({
   show,
   handleClose,
-  roll,
+  selectedZone,
   isEditing,
+  onSubmit,
 }) => {
-  const [nombreZona, setNombreZona] = useState("");
+  // Estado inicial para los datos del formulario
+  const [zoneData, setZoneData] = useState<Zone>({ name: "" });
 
-  // Si estamos en modo edición y el rol existe, llenamos el formulario con los datos actuales
+  // Efecto que se ejecuta cada vez que cambia la zona seleccionada
   useEffect(() => {
-    if (isEditing && roll) {
-      setNombreZona(roll.nombreZona); // Carga el nombre del rol si estamos editando
+    if (selectedZone) {
+      setZoneData(selectedZone); // Si estamos editando, establece los datos en el formulario
     } else {
-      setNombreZona(""); // Resetea el formulario si estamos creando
+      setZoneData({ name: "" }); // Si no, reinicia el formulario para crear
     }
-  }, [isEditing, roll]);
+  }, [selectedZone]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Maneja el cambio en los inputs
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setZoneData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Envía el formulario
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isEditing) {
-      // Lógica para actualizar el rol
-      console.log("Editando Zona:", nombreZona);
-    } else {
-      // Lógica para crear un nuevo rol
-      console.log("Creando Nueva Zona:", nombreZona);
-    }
-    handleClose(); // Cierra el modal después de guardar
+    await onSubmit(zoneData); // Llama a la función onSubmit proporcionada
+    handleClose(); // Cierra el modal al terminar
   };
 
   return (
@@ -45,24 +50,25 @@ const FormZona: React.FC<FormZonaProps> = ({
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="nombreZona">
-            <Form.Label>Nombre de la zona</Form.Label>
+            <Form.Label>Nombre de la Zona</Form.Label>
             <Form.Control
               type="text"
-              value={nombreZona}
-              onChange={(e) => setNombreZona(e.target.value)}
+              name="name"
+              value={zoneData.name} // El valor se actualiza con el estado zoneData
+              onChange={handleChange}
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            {isEditing ? "Guardar Cambios" : "Crear Zona"}
-          </Button>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button variant="primary" type="submit">
+              {isEditing ? "Actualizar" : "Crear"}
+            </Button>
+          </Modal.Footer>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };

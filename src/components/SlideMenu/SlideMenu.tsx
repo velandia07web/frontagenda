@@ -17,7 +17,7 @@ import FormCiudad from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
 //import FormRoll from "../formRoll/formRoll";
 import FormRed from "../formRedSocial/formRedSocial";
-import FormZona from "../formZonas/formZonas";
+/* import FormZona from "../formZonas/formZonas"; */
 import { useNavigate } from "react-router-dom"; // Importar useNavigate
 
 interface SlideMenuProps {
@@ -37,7 +37,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   /* const [showModalroll, setShowModalroll] = useState(false); */
   const [showModalEquipo, setShowModalEquipo] = useState(false);
   const [showModalRed, setShowModalRed] = useState(false);
-  const [showModalZona, setShowModalZona] = useState(false);
+  /*  const [showModalZona, setShowModalZona] = useState(false); */
   const [showModalCiudad, setShowModalCiudad] = useState(false);
   const [showModalClientes, setShowModalClientes] = useState(false);
   const [showModalInventario, setShowModalInventario] = useState(false);
@@ -113,10 +113,10 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     nombreRed: string;
   } | null>(null);
 
-  const [isEditingZona, setIsEditingZona] = useState(false);
+  /*  const [isEditingZona, setIsEditingZona] = useState(false);
   const [selectedZona, setSelectedZona] = useState<{
     nombreZona: string;
-  } | null>(null);
+  } | null>(null); */
 
   const [isEditingCiudad, setIsEditingCiudad] = useState(false);
   const [selectedCiudad, setSelectedCiudad] = useState<{
@@ -161,17 +161,17 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setSelectedRed(null); // Resetea el rol seleccionado
   };
 
-  // modal Zona
+  /*  // modal Zona
   const handleOpenCreateZonaModal = () => {
     setSelectedZona(null); // No hay rol seleccionado, es un nuevo rol
     setIsEditingZona(false); // No estamos editando
     setShowModalZona(true); // Abre el modal
-  };
-  const handleCloseModalZona = () => {
+  }; */
+  /* const handleCloseModalZona = () => {
     setShowModalZona(false); // Cierra el modal
     setIsEditingZona(false); // Resetea el modo edición
     setSelectedZona(null); // Resetea el rol seleccionado
-  };
+  }; */
 
   // modal ciudad
   const handleOpenCreateCiudadModal = () => {
@@ -244,9 +244,9 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <FontAwesomeIcon icon={faMinus} /> Crear Red De Conexion
                   </li>
 
-                  <li onClick={handleOpenCreateZonaModal}>
+                  {/* <li onClick={handleOpenCreateZonaModal}>
                     <FontAwesomeIcon icon={faMinus} /> Crear Zona
-                  </li>
+                  </li> */}
 
                   <li onClick={handleOpenCreateCiudadModal}>
                     <FontAwesomeIcon icon={faMinus} /> Ciudades
@@ -389,14 +389,14 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         />
       )}
 
-      {showModalZona && (
+      {/*   {showModalZona && (
         <FormZona
           show={showModalZona}
           handleClose={handleCloseModalZona}
-          roll={selectedZona} // Pasa el rol seleccionado o null
+          selectedZone={selectedZona} // Pasa el rol seleccionado o null
           isEditing={isEditingZona} // Pasa si estamos editando o creando
         />
-      )}
+      )} */}
 
       {showModalCiudad && (
         <FormCiudad
