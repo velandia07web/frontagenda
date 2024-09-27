@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -12,117 +12,143 @@ import {
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaRedSocial.css"; // Importa el archivo CSS
-import FormRoll from "../formRedSocial/formRedSocial";
-import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import Swal from "sweetalert2";
+import styled from "styled-components";
+import FormRedSocial from "../formRedSocial/formRedSocial";
+import {
+  getAllSocialMedias,
+  createSocialMedia,
+  updateSocialMedia,
+  deleteSocialMedia,
+  SocialMedia,
+} from "../../servicios/socialMedia";
 
-interface red {
-  nombreRed: string;
-}
-
-const redes: red[] = [
-  {
-    nombreRed: "Facebook",
-  },
-  {
-    nombreRed: "Instagram",
-  },
-  {
-    nombreRed: "P.W kuva",
-  },
-  {
-    nombreRed: "Watsapp",
-  },
-  {
-    nombreRed: "Recomendado",
-  },
-  // Agrega más datos según sea necesario
-];
+const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
+  // Aquí puedes agregar tus estilos personalizados
+`;
 
 const TablaRed: React.FC = () => {
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedRed, setSelectedRed] = useState<red | null>(null); // Estado para el roll seleccionado
+  const [selectedRed, setSelectedRed] = useState<SocialMedia | null>(null); // Estado para la red social seleccionada
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición o creación
+  const [showModalRed, setShowModalRed] = useState(false); // Estado para mostrar el modal
+  const [socialMedias, setSocialMedias] = useState<SocialMedia[]>([]); // Estado para almacenar las redes sociales
   const navigate = useNavigate(); // Hook para navegación
-  const [showModalred, setShowModalred] = useState(false);
 
-  // Maneja la edición
-  const handleEdit = (row: red) => {
-    setSelectedRed(row); // Guarda el rol seleccionado para editar
+  // Cargar las redes sociales cuando el componente se monta
+  const fetchSocialMedias = async () => {
+    try {
+      const data = await getAllSocialMedias();
+      setSocialMedias(data); // Actualiza el estado con las redes sociales obtenidas
+    } catch (error) {
+      console.error("Error al obtener redes sociales:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSocialMedias();
+  }, []);
+
+  const handleEdit = (row: SocialMedia) => {
+    setSelectedRed(row); // Guarda la red social seleccionada para editar
     setIsEditing(true); // Activa el modo edición
-    setShowModalred(true); // Abre el modal
+    setShowModalRed(true); // Abre el modal
   };
 
-  // Maneja la creación de un nuevo rol
   const handleCreate = () => {
-    setSelectedRed(null); // Resetea el rol seleccionado
+    setSelectedRed(null); // Resetea la red social seleccionada
     setIsEditing(false); // Activa el modo creación
-    setShowModalred(true); // Abre el modal
+    setShowModalRed(true); // Abre el modal
   };
 
-  const handleDelete = (row: red) => {
-    Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar La Red ${row.nombreRed}?`,
+  const handleDelete = async (row: SocialMedia) => {
+    const result = await Swal.fire({
+      title: `¿Estás seguro de que deseas eliminar la red ${row.name}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result: SweetAlertResult) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Eliminado",
-          text: `Rol ${row.nombreRed} eliminado`,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // Implementa la lógica para eliminar el rol del servidor aquí
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteSocialMedia(row.id!);
+        setSocialMedias((prev) =>
+          prev.filter((socialMedia) => socialMedia.id !== row.id)
+        );
+        Swal.fire("Eliminado", `Red social ${row.name} eliminada`, "success");
+      } catch (error) {
+        Swal.fire("Error", "No se pudo eliminar la red social", "error");
+      }
+    }
   };
 
-  const handleToggleMenu = (isExpanded: boolean) => {
-    setIsSlideMenuExpanded(isExpanded);
+  const handleCloseModalRed = () => {
+    setShowModalRed(false);
+    setSelectedRed(null);
   };
 
-  const handleGoToHome = () => {
-    navigate("/home"); // Navega a la ruta de inicio
+  const handleModalSubmit = async (socialMedia: SocialMedia) => {
+    try {
+      if (isEditing && selectedRed) {
+        const updatedSocialMedia = await updateSocialMedia(
+          selectedRed.id!,
+          socialMedia
+        );
+        setSocialMedias((prev) =>
+          prev.map((sm) => (sm.id === selectedRed.id ? updatedSocialMedia : sm))
+        );
+        Swal.fire(
+          "Actualizado",
+          `Red social ${socialMedia.name} actualizada`,
+          "success"
+        );
+      } else {
+        const newSocialMedia = await createSocialMedia(socialMedia);
+        setSocialMedias((prev) => [...prev, newSocialMedia]);
+        Swal.fire("Creado", `Red social ${socialMedia.name} creada`, "success");
+      }
+    } catch (error) {
+      Swal.fire("Error", "No se pudo guardar la red social", "error");
+    } finally {
+      handleCloseModalRed();
+      fetchSocialMedias();
+    }
   };
 
-  const handleCloseModalred = () => {
-    setShowModalred(false);
-  };
-
-  // Filtra los datos basado en la búsqueda
-  const filteredroll = redes.filter((red) =>
-    Object.values(red).some((value) =>
-      value.toLowerCase().includes(search.toLowerCase())
-    )
-  );
+  const filteredSocialMedias = Array.isArray(socialMedias)
+    ? socialMedias.filter((socialMedia) =>
+        Object.values(socialMedia).some((value) =>
+          value.toString().toLowerCase().includes(search.toLowerCase())
+        )
+      )
+    : [];
 
   const columns = [
-    { name: "Nombre", selector: (row: red) => row.nombreRed, sortable: true },
+    {
+      name: "Nombre",
+      selector: (row: SocialMedia) => row.name,
+      sortable: true,
+    },
     {
       name: "Editar",
-      cell: (row: red) => (
+      cell: (row: SocialMedia) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
     },
     {
       name: "Eliminar",
-      cell: (row: red) => (
+      cell: (row: SocialMedia) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
     },
   ];
 
@@ -130,7 +156,7 @@ const TablaRed: React.FC = () => {
     <div className="d-flex flex-column min-vh-100">
       <NavbarComponent />
       <div className="d-flex flex-grow-1 tablaClien">
-        <SlideMenu onToggleMenu={handleToggleMenu} />
+        <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
           className={`content-area-table ${
             isSlideMenuExpanded ? "expanded" : ""
@@ -138,18 +164,15 @@ const TablaRed: React.FC = () => {
         >
           <div className="container mt-4">
             <div className="botones">
-              <div className="botonR">
-                <button className="btn btn-primary" onClick={handleGoToHome}>
-                  <FontAwesomeIcon icon={faUsers} /> Regresar
-                </button>
-              </div>
-
-              <div className="botonA">
-                <button onClick={handleCreate} className="btn btn-primary">
-                  <FontAwesomeIcon icon={faPlus} /> Crear Rol
-                </button>
-              </div>
-
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate("/home")}
+              >
+                <FontAwesomeIcon icon={faUsers} /> Regresar
+              </button>
+              <button onClick={handleCreate} className="btn btn-primary">
+                <FontAwesomeIcon icon={faPlus} /> Crear Red Social
+              </button>
               <div className="Buscador">
                 <input
                   type="text"
@@ -161,9 +184,9 @@ const TablaRed: React.FC = () => {
               </div>
             </div>
             <div className="table-responsive">
-              <DataTable
+              <StyledDataTable
                 columns={columns}
-                data={filteredroll}
+                data={filteredSocialMedias}
                 pagination
                 highlightOnHover
                 pointerOnHover
@@ -173,12 +196,13 @@ const TablaRed: React.FC = () => {
           </div>
         </main>
       </div>
-      {showModalred && (
-        <FormRoll
-          show={showModalred}
-          handleClose={handleCloseModalred}
-          roll={selectedRed}
-          isEditing={isEditing} // Pasa si está en modo edición o no
+      {showModalRed && (
+        <FormRedSocial
+          show={showModalRed}
+          handleClose={handleCloseModalRed}
+          selectedSocial={selectedRed}
+          isEditing={isEditing}
+          onSubmit={handleModalSubmit}
         />
       )}
     </div>

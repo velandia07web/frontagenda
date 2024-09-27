@@ -1,0 +1,33 @@
+.modal-content {
+  background-color: #f9f9f9; /* Fondo del modal */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 20px; /* Espaciado interno */
+}
+
+.form-control:focus {
+  border-color: #007072; /* Borde azul en el enfoque */
+  box-shadow: 0 0 5px rgba(0, 112, 114, 0.5); /* Efecto de sombra suave */
+}
+
+.form {
+  background-color: #007072; /* Color de fondo del botón */
+  border: none; /* Sin borde */
+}
+
+.form:hover {
+  background-color: #005a5a; /* Color de fondo al pasar el mouse */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave al pasar el mouse */
+}
+
+.forms {
+  background-color: #a39f9f; /* Color de fondo del botón cancelar */
+  border: none; /* Sin borde */
+}
+
+.forms:hover {
+  background-color: #d0d0d0; /* Color de fondo al pasar el mouse */
+}
+
+.mt-4 {
+  margin-top: 20px; /* Espaciado entre botones y campos */
+}

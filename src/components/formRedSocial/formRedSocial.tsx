@@ -1,47 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import "./formRedSocial.css";
 
-interface FormRedProps {
-  show: boolean;
-  handleClose: () => void;
-  roll: { nombreRed: string } | null; // El rol seleccionado, o null si es un nuevo rol
-  isEditing: boolean; // Si estamos en modo edición o no
+interface SocialMedia {
+  name: string; // Definir la propiedad 'name' en lugar de 'nombreRed'
 }
 
-const FormRed: React.FC<FormRedProps> = ({
+interface FormSocialProps {
+  show: boolean;
+  handleClose: () => void;
+  selectedSocial: SocialMedia | null; // Cambia 'roll' a 'selectedSocial'
+  isEditing: boolean;
+  onSubmit: (socialMedia: SocialMedia) => Promise<void>; // Cambia el nombre de la función
+}
+
+const FormRedSocial: React.FC<FormSocialProps> = ({
   show,
   handleClose,
-  roll,
+  selectedSocial,
   isEditing,
+  onSubmit,
 }) => {
-  const [nombreRed, setNombreRed] = useState("");
+  const [name, setName] = useState("");
 
-  // Si estamos en modo edición y el rol existe, llenamos el formulario con los datos actuales
   useEffect(() => {
-    if (isEditing && roll) {
-      setNombreRed(roll.nombreRed); // Carga el nombre del rol si estamos editando
+    if (isEditing && selectedSocial) {
+      setName(selectedSocial.name); // Cambia 'nombreRed' a 'name'
     } else {
-      setNombreRed(""); // Resetea el formulario si estamos creando
+      setName(""); // Resetea el formulario si estamos creando
     }
-  }, [isEditing, roll]);
+  }, [isEditing, selectedSocial]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isEditing) {
-      // Lógica para actualizar el rol
-      console.log("Editando Red de Conexion:", nombreRed);
-    } else {
-      // Lógica para crear un nuevo rol
-      console.log("Creando nueva Red de Conexion:", nombreRed);
-    }
-    handleClose(); // Cierra el modal después de guardar
+    await onSubmit({ name }); // Asegúrate de pasar el objeto con la propiedad 'name'
+    handleClose();
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>
-          {isEditing ? "Editar Red de Conexion" : "Crear Red de Conexion"}
+          {isEditing ? "Editar Red Social" : "Crear Red Social"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -50,23 +50,27 @@ const FormRed: React.FC<FormRedProps> = ({
             <Form.Label>Nombre de Red</Form.Label>
             <Form.Control
               type="text"
-              value={nombreRed}
-              onChange={(e) => setNombreRed(e.target.value)}
+              value={name} // Cambia 'nombreRed' a 'name'
+              onChange={(e) => setName(e.target.value)}
               required
+              size="lg" // Tamaño del input más grande
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            {isEditing ? "Guardar Cambios" : "Crear Rol"}
-          </Button>
+          <div className="d-flex justify-content-between mt-4">
+            <Button
+              className="custom-btn-secondary forms"
+              onClick={handleClose}
+            >
+              Cancelar
+            </Button>
+            <Button className="custom-btn-primary form" type="submit">
+              {isEditing ? "Guardar Cambios" : "Crear Red"}
+            </Button>
+          </div>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };
 
-export default FormRed;
+export default FormRedSocial;

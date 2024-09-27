@@ -3,6 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { City } from "../../servicios/city";
 import { getAllZones } from "../../servicios/zone";
 import { Zone } from "../../servicios/zone";
+import "./formCiudades.css"; // Archivo de estilos personalizado
 
 interface FormCiudadProps {
   show: boolean;
@@ -22,7 +23,7 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
   const [ciudadData, setCiudadData] = useState<City>({
     id: "",
     name: "",
-    idZone: "", // Cambiado a string
+    idZone: "",
   });
 
   const [zonas, setZonas] = useState<Zone[]>([]);
@@ -31,7 +32,6 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
     const fetchZones = async () => {
       try {
         const zones = await getAllZones();
-        console.log("Zonas obtenidas:", zones); // Para depurar
         setZonas(zones);
       } catch (error) {
         console.error("Error al obtener zonas:", error);
@@ -43,7 +43,7 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
     if (selectedCiudad) {
       setCiudadData(selectedCiudad);
     } else {
-      setCiudadData({ id: "", name: "", idZone: "" }); // Cambiado a string
+      setCiudadData({ id: "", name: "", idZone: "" });
     }
   }, [selectedCiudad]);
 
@@ -53,12 +53,9 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-
-    console.log("Nombre:", name, "Valor:", value); // Para depurar
-
     setCiudadData((prev) => ({
       ...prev,
-      [name]: name === "idZone" ? value : value, // No necesitas convertir a número, ya que idZone es un string
+      [name]: value,
     }));
   };
 
@@ -68,32 +65,37 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>
+        <Modal.Title className="modal-title-custom">
           {isEditing ? "Editar Ciudad" : "Crear Ciudad"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formCityName">
-            <Form.Label>Nombre de la Ciudad</Form.Label>
+          <Form.Group controlId="formCityName" className="mb-4">
+            <Form.Label className="form-label-custom">
+              Nombre de la Ciudad
+            </Form.Label>
             <Form.Control
               type="text"
               placeholder="Ingrese el nombre de la ciudad"
               name="name"
               value={ciudadData.name}
               onChange={handleChange}
+              className="custom-input"
               required
             />
           </Form.Group>
-          <Form.Group controlId="formCityZone">
-            <Form.Label>Zona</Form.Label>
+
+          <Form.Group controlId="formCityZone" className="mb-4">
+            <Form.Label className="form-label-custom">Zona</Form.Label>
             <Form.Control
               as="select"
               name="idZone"
-              value={ciudadData.idZone} // Asegúrate de que sea un string
+              value={ciudadData.idZone}
               onChange={handleChange}
+              className="custom-select"
               required
             >
               <option value="">Seleccionar Zona</option>
@@ -104,11 +106,12 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
               ))}
             </Form.Control>
           </Form.Group>
+
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
+            <Button className="custom-btn-secondary" onClick={handleClose}>
               Cerrar
             </Button>
-            <Button variant="primary" type="submit">
+            <Button className="custom-btn-primary" type="submit">
               {isEditing ? "Actualizar" : "Crear"}
             </Button>
           </Modal.Footer>
