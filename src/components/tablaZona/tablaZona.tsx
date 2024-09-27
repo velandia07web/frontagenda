@@ -30,7 +30,6 @@ const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
 const TablaZona: React.FC = () => {
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-
   const [selectedZona, setSelectedZona] = useState<Zone | null>(null); // Estado para la zona seleccionada
   const [isEditing, setIsEditing] = useState(false);
   const [showModalZona, setShowModalZona] = useState(false);
@@ -157,10 +156,10 @@ const TablaZona: React.FC = () => {
                 className="btn btn-primary"
                 onClick={() => navigate("/home")}
               >
-                <FontAwesomeIcon icon={faUsers} /> Regresar
+                <FontAwesomeIcon icon={faUsers} />
               </button>
               <button onClick={handleCreate} className="btn btn-primary">
-                <FontAwesomeIcon icon={faPlus} /> Crear Zona
+                <FontAwesomeIcon icon={faPlus} />
               </button>
               <input
                 type="text"

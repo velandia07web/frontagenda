@@ -1,4 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  getAllCities,
+  createCity,
+  updateCity,
+  deleteCity,
+  City,
+} from "../../servicios/city";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -11,138 +18,143 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./tablaCiudades.css"; // Importa el archivo CSS
+import "./tablaCiudades.css";
 import FormCiudad from "../formCiudades/formCiudades";
-import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import Swal from "sweetalert2";
+import styled from "styled-components";
+import { getAllZones, Zone } from "../../servicios/zone";
 
-interface ciudad {
-  nombreCiudad: string;
-  nombreZona: string;
-}
+const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
+  // Aquí van tus estilos personalizados
+`;
 
-const ciudades: ciudad[] = [
-  {
-    nombreCiudad: "usme",
-    nombreZona: "Bogota",
-  },
-  {
-    nombreCiudad: "itagui",
-    nombreZona: "Medellin",
-  },
-  {
-    nombreCiudad: "yumbo",
-    nombreZona: "Cali",
-  },
-  {
-    nombreCiudad: "santa marta",
-    nombreZona: "Barranquilla",
-  },
-  {
-    nombreCiudad: "carta",
-    nombreZona: "Cartago",
-  },
-  {
-    nombreCiudad: "manizales",
-    nombreZona: "Eje Cafetero",
-  },
-  // Agrega más datos según sea necesario
-];
-
-const tablaCiudad: React.FC = () => {
+const TablaCiudad: React.FC = () => {
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedCiudad, setSelectedCiudad] = useState<ciudad | null>(null); // Estado para el roll seleccionado
-  const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición o creación
-  const navigate = useNavigate(); // Hook para navegación
+  const [selectedCiudad, setSelectedCiudad] = useState<City | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [showModalCiudad, setShowModalCiudad] = useState(false);
+  const [ciudades, setCiudades] = useState<City[]>([]);
+  const [zonas, setZonas] = useState<Zone[]>([]);
+  const navigate = useNavigate();
 
-  // Maneja la edición
-  const handleEdit = (row: ciudad) => {
-    setSelectedCiudad(row); // Guarda el rol seleccionado para editar
-    setIsEditing(true); // Activa el modo edición
-    setShowModalCiudad(true); // Abre el modal
+  const fetchCities = async () => {
+    try {
+      const [fetchedCities, fetchedZones] = await Promise.all([
+        getAllCities(),
+        getAllZones(), // Obtener zonas
+      ]);
+      setCiudades(fetchedCities);
+      setZonas(fetchedZones);
+    } catch (error) {
+      console.error("Error al obtener ciudades:", error);
+    }
   };
 
-  // Maneja la creación de un nuevo rol
+  useEffect(() => {
+    fetchCities();
+  }, []);
+
+  const handleEdit = (ciudad: City) => {
+    setSelectedCiudad(ciudad);
+    setIsEditing(true);
+    setShowModalCiudad(true);
+  };
+
   const handleCreate = () => {
-    setSelectedCiudad(null); // Resetea el rol seleccionado
-    setIsEditing(false); // Activa el modo creación
-    setShowModalCiudad(true); // Abre el modal
+    setSelectedCiudad(null);
+    setIsEditing(false);
+    setShowModalCiudad(true);
   };
 
-  const handleDelete = (row: ciudad) => {
-    Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar la ciudad ${row.nombreCiudad}?`,
+  const handleDelete = async (ciudad: City) => {
+    const result = await Swal.fire({
+      title: `¿Estás seguro de que deseas eliminar la ciudad ${ciudad.name}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result: SweetAlertResult) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Eliminado",
-          text: `ciudad ${row.nombreCiudad} eliminado`,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // Implementa la lógica para eliminar el rol del servidor aquí
-      }
     });
-  };
 
-  const handleToggleMenu = (isExpanded: boolean) => {
-    setIsSlideMenuExpanded(isExpanded);
-  };
-
-  const handleGoToHome = () => {
-    navigate("/home"); // Navega a la ruta de inicio
+    if (result.isConfirmed) {
+      try {
+        await deleteCity(ciudad.id!); // Elimina utilizando el id que ahora es un string
+        setCiudades((prev) => prev.filter((c) => c.id !== ciudad.id));
+        Swal.fire("Eliminado", `Ciudad ${ciudad.name} eliminada`, "success");
+      } catch (error) {
+        Swal.fire("Error", "No se pudo eliminar la ciudad", "error");
+      }
+    }
   };
 
   const handleCloseModalCiudad = () => {
     setShowModalCiudad(false);
+    setSelectedCiudad(null);
   };
 
-  // Filtra los datos basado en la búsqueda
-  const filteredCiudad = ciudades.filter((ciudad) =>
+  const handleModalSubmit = async (ciudad: City) => {
+    try {
+      if (isEditing && selectedCiudad) {
+        const updatedCity = await updateCity(selectedCiudad.id!, ciudad); // Asegúrate de que updateCity esté ajustado para manejar el id como string
+        setCiudades((prev) =>
+          prev.map((c) => (c.id === selectedCiudad.id ? updatedCity : c))
+        );
+        Swal.fire(
+          "Actualizado",
+          `Ciudad ${ciudad.name} actualizada`,
+          "success"
+        );
+      } else {
+        const newCity = await createCity(ciudad); // Asegúrate de que createCity maneje el idZone
+        setCiudades((prev) => [...prev, newCity]);
+        Swal.fire("Creado", `Ciudad ${ciudad.name} creada`, "success");
+      }
+    } catch (error) {
+      Swal.fire("Error", "No se pudo guardar la ciudad", "error");
+    } finally {
+      handleCloseModalCiudad();
+      fetchCities();
+    }
+  };
+
+  const filteredCiudades = ciudades.filter((ciudad) =>
     Object.values(ciudad).some((value) =>
-      value.toLowerCase().includes(search.toLowerCase())
+      value.toString().toLowerCase().includes(search.toLowerCase())
     )
   );
 
   const columns = [
     {
-      name: "NombreCiudad",
-      selector: (row: ciudad) => row.nombreCiudad,
+      name: "Nombre Ciudad",
+      selector: (row: City) => row.name,
       sortable: true,
     },
-
     {
-      name: "Zona", // Nueva columna para mostrar el campo 'nombreZona'
-      selector: (row: ciudad) => row.nombreZona,
+      name: "Zona", // Cambiar "ID Zona" a "Zona"
+      selector: (row: City) => {
+        const zone = zonas.find((z) => z.id === row.idZone); // Buscar la zona por ID
+        return zone ? zone.name : "No asignada"; // Devolver el nombre de la zona o un valor por defecto
+      },
       sortable: true,
     },
     {
       name: "Editar",
-      cell: (row: ciudad) => (
+      cell: (row: City) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
     },
     {
       name: "Eliminar",
-      cell: (row: ciudad) => (
+      cell: (row: City) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
     },
   ];
 
@@ -150,7 +162,7 @@ const tablaCiudad: React.FC = () => {
     <div className="d-flex flex-column min-vh-100">
       <NavbarComponent />
       <div className="d-flex flex-grow-1 tablaClien">
-        <SlideMenu onToggleMenu={handleToggleMenu} />
+        <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
           className={`content-area-table ${
             isSlideMenuExpanded ? "expanded" : ""
@@ -158,32 +170,27 @@ const tablaCiudad: React.FC = () => {
         >
           <div className="container mt-4">
             <div className="botones">
-              <div className="botonR">
-                <button className="btn btn-primary" onClick={handleGoToHome}>
-                  <FontAwesomeIcon icon={faUsers} /> Regresar
-                </button>
-              </div>
-
-              <div className="botonA">
-                <button onClick={handleCreate} className="btn btn-primary">
-                  <FontAwesomeIcon icon={faPlus} /> Crear Ciudad
-                </button>
-              </div>
-
-              <div className="Buscador">
-                <input
-                  type="text"
-                  className="form-control buscador"
-                  placeholder="Buscar en la tabla..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate("/home")}
+              >
+                <FontAwesomeIcon icon={faUsers} />
+              </button>
+              <button onClick={handleCreate} className="btn btn-primary">
+                <FontAwesomeIcon icon={faPlus} /> Crear Ciudad
+              </button>
+              <input
+                type="text"
+                className="form-control buscador"
+                placeholder="Buscar en la tabla..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
             <div className="table-responsive">
-              <DataTable
+              <StyledDataTable
                 columns={columns}
-                data={filteredCiudad}
+                data={filteredCiudades}
                 pagination
                 highlightOnHover
                 pointerOnHover
@@ -193,16 +200,18 @@ const tablaCiudad: React.FC = () => {
           </div>
         </main>
       </div>
+
       {showModalCiudad && (
         <FormCiudad
           show={showModalCiudad}
           handleClose={handleCloseModalCiudad}
-          ciudad={selectedCiudad}
-          isEditing={isEditing} // Pasa si está en modo edición o no
+          selectedCiudad={selectedCiudad}
+          isEditing={isEditing}
+          onSubmit={handleModalSubmit} // Asegúrate de que la propiedad se llama onSubmit
         />
       )}
     </div>
   );
 };
 
-export default tablaCiudad;
+export default TablaCiudad;

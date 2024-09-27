@@ -1,43 +1,70 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { City } from "../../servicios/city";
+import { getAllZones } from "../../servicios/zone";
+import { Zone } from "../../servicios/zone";
 
 interface FormCiudadProps {
   show: boolean;
   handleClose: () => void;
-  ciudad: { nombreCiudad: string; nombreZona: string } | null; // El rol seleccionado, o null si es un nuevo rol
-  isEditing: boolean; // Si estamos en modo edición o no
+  selectedCiudad: City | null;
+  isEditing: boolean;
+  onSubmit: (ciudad: City) => Promise<void>;
 }
 
 const FormCiudad: React.FC<FormCiudadProps> = ({
   show,
   handleClose,
-  ciudad,
+  selectedCiudad,
   isEditing,
+  onSubmit,
 }) => {
-  const [nombreZona, setNombreZona] = useState("");
-  const [nombreCiudad, setNombreCiudad] = useState("");
+  const [ciudadData, setCiudadData] = useState<City>({
+    id: "",
+    name: "",
+    idZone: "", // Cambiado a string
+  });
 
-  // Si estamos en modo edición y el rol existe, llenamos el formulario con los datos actuales
+  const [zonas, setZonas] = useState<Zone[]>([]);
+
   useEffect(() => {
-    if (isEditing && ciudad) {
-      setNombreCiudad(ciudad.nombreCiudad);
-      setNombreZona(ciudad.nombreZona); // Carga el nombre del rol si estamos editando
-    } else {
-      setNombreCiudad("");
-      setNombreZona(""); // Resetea el formulario si estamos creando
-    }
-  }, [isEditing, ciudad]);
+    const fetchZones = async () => {
+      try {
+        const zones = await getAllZones();
+        console.log("Zonas obtenidas:", zones); // Para depurar
+        setZonas(zones);
+      } catch (error) {
+        console.error("Error al obtener zonas:", error);
+      }
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isEditing) {
-      // Lógica para actualizar el rol
-      console.log("Editando Ciudad:", nombreCiudad, nombreZona);
+    fetchZones();
+
+    if (selectedCiudad) {
+      setCiudadData(selectedCiudad);
     } else {
-      // Lógica para crear un nuevo rol
-      console.log("Creando nuevo Ciudad:", nombreCiudad, nombreZona);
+      setCiudadData({ id: "", name: "", idZone: "" }); // Cambiado a string
     }
-    handleClose(); // Cierra el modal después de guardar
+  }, [selectedCiudad]);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    console.log("Nombre:", name, "Valor:", value); // Para depurar
+
+    setCiudadData((prev) => ({
+      ...prev,
+      [name]: name === "idZone" ? value : value, // No necesitas convertir a número, ya que idZone es un string
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await onSubmit(ciudadData);
   };
 
   return (
@@ -49,36 +76,44 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="nombreZona">
-            <Form.Label>Nombre de la Zona</Form.Label>
+          <Form.Group controlId="formCityName">
+            <Form.Label>Nombre de la Ciudad</Form.Label>
             <Form.Control
               type="text"
-              value={nombreZona}
-              onChange={(e) => setNombreZona(e.target.value)}
+              placeholder="Ingrese el nombre de la ciudad"
+              name="name"
+              value={ciudadData.name}
+              onChange={handleChange}
               required
             />
           </Form.Group>
-
-          <Form.Group controlId="nombreCiudad">
-            <Form.Label>Nombre del Ciudad</Form.Label>
+          <Form.Group controlId="formCityZone">
+            <Form.Label>Zona</Form.Label>
             <Form.Control
-              type="text"
-              value={nombreCiudad}
-              onChange={(e) => setNombreCiudad(e.target.value)}
+              as="select"
+              name="idZone"
+              value={ciudadData.idZone} // Asegúrate de que sea un string
+              onChange={handleChange}
               required
-            />
+            >
+              <option value="">Seleccionar Zona</option>
+              {zonas.map((zona) => (
+                <option key={zona.id} value={zona.id}>
+                  {zona.name}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
-
-          <Button variant="primary" type="submit">
-            {isEditing ? "Guardar Cambios" : "Crear ciudad"}
-          </Button>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Cerrar
+            </Button>
+            <Button variant="primary" type="submit">
+              {isEditing ? "Actualizar" : "Crear"}
+            </Button>
+          </Modal.Footer>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };

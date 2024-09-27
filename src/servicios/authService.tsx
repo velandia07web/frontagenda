@@ -5,7 +5,7 @@ export const logout = async (): Promise<boolean> => {
     // Supongamos que tienes el ID del usuario almacenado en el token o localStorage.
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId"); // Aquí deberías obtener el id del usuario
-    localStorage.removeItem("rol");
+
     //console.log(userId);
     //console.log("hola", import.meta.env.VITE_API_BASE_URL);
 
@@ -31,6 +31,7 @@ export const logout = async (): Promise<boolean> => {
       localStorage.removeItem("token");
       localStorage.removeItem("userId"); // Opcional: eliminar el ID si es necesario
       localStorage.removeItem("user");
+      localStorage.removeItem("rol");
       return true;
     } else {
       console.error("Error al cerrar la sesión");
