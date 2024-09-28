@@ -1,177 +1,182 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  User,
+  CreateUserPayload,
+} from "../../servicios/user";
+import { getAllZones, Zone } from "../../servicios/zone";
+import { getAllRoles, Role } from "../../servicios/rol"; // Servicios de roles
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
-import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsers,
-  faEdit,
-  faTrash,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./tablaEquipo.css"; // Importa el archivo CSS
+import "./tablaEquipo.css";
 import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
-import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import Swal from "sweetalert2";
 import styled from "styled-components";
 
+// Componente para estilizar la tabla
 const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
   // Aquí van tus estilos personalizados
 `;
 
-interface equipo {
-  nombre: string;
-  email: string;
-  cedula: number;
-  telefono: string;
-  rol: string;
-  zona: string;
-}
-
-const equipoT: equipo[] = [
-  {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
-  },
-  {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
-  },
-  {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
-  },
-  {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
-  },
-  {
-    nombre: "Jhonatan Velandia",
-    email: "velandiajhonat@gmail.com",
-    cedula: 1053839567,
-    telefono: "30083522345",
-    rol: "Administrador",
-    zona: "Norte",
-  },
-  // Agrega más datos según sea necesario
-];
-
 const TablaEquipo: React.FC = () => {
+  // Estados locales
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedequipo, setSelectedequipo] = useState<equipo | null>(null); // Estado para el roll seleccionado
-  const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición o creación
-  const navigate = useNavigate(); // Hook para navegación
-  const [showModalequipo, setShowModalequipo] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showModalUser, setShowModalUser] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+
+  // Función para obtener usuarios, zonas y roles al cargar la página
+  const fetchData = async () => {
+    try {
+      const [fetchedUsers, fetchedZones, fetchedRolesResponse] =
+        await Promise.all([
+          getAllUsers(), // Se espera que este retorne un array de usuarios
+          getAllZones(), // Se espera que este retorne un array de zonas
+          getAllRoles(), // Se espera que este retorne un objeto RolesResponse
+        ]);
+
+      // Asignar los arrays de datos directamente
+      setUsers(fetchedUsers); // Ajuste para usuarios
+      setZones(fetchedZones); // Ajuste para zonas
+      setRoles(fetchedRolesResponse.data.rows); // Ajuste para roles
+    } catch (error) {
+      console.error("Error al obtener los datos:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Maneja la edición
-  const handleEdit = (row: equipo) => {
-    setSelectedequipo(row); // Guarda el rol seleccionado para editar
-    setIsEditing(true); // Activa el modo edición
-    setShowModalequipo(true); // Abre el modal
+  const handleEdit = (user: User) => {
+    setSelectedUser(user);
+    setIsEditing(true);
+    setShowModalUser(true);
   };
 
-  // Maneja la creación de un nuevo rol
+  // Maneja la creación de un nuevo usuario
   const handleCreate = () => {
-    setSelectedequipo(null); // Resetea el rol seleccionado
-    setIsEditing(false); // Activa el modo creación
-    setShowModalequipo(true); // Abre el modal
+    setSelectedUser(null);
+    setIsEditing(false);
+    setShowModalUser(true);
   };
 
-  // Maneja la eliminación de un equipo
-  const handleDelete = (row: equipo) => {
-    Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el Usuario ${row.nombre}?`,
-      text: "Esta acción podría afectar otros procesos y usuarios",
+  // Maneja la eliminación de un usuario
+  const handleDelete = async (user: User) => {
+    const result = await Swal.fire({
+      title: `¿Estás seguro de que deseas eliminar al usuario ${user.name}?`,
+      text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result: SweetAlertResult) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Eliminado",
-          text: `Usuario ${row.nombre} eliminado`,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // Implementa la lógica para eliminar el rol del servidor aquí
-      }
     });
+
+    if (result.isConfirmed && user.id) {
+      try {
+        await deleteUser(user.id!);
+        setUsers((prev) => prev.filter((u) => u.id !== user.id));
+        Swal.fire("Eliminado", `Usuario ${user.name} eliminado`, "success");
+      } catch (error) {
+        Swal.fire("Error", "No se pudo eliminar el usuario", "error");
+      }
+    }
   };
 
-  const handleToggleMenu = (isExpanded: boolean) => {
-    setIsSlideMenuExpanded(isExpanded);
+  // Cierra el modal de usuarios
+  const handleCloseModalUser = () => {
+    setShowModalUser(false);
+    setSelectedUser(null);
   };
 
-  const handleGoToHome = () => {
-    navigate("/home"); // Navega a la ruta de inicio
+  // Maneja el submit del modal de creación/edición de usuarios
+  const handleModalSubmit = async (user: User, password?: string) => {
+    try {
+      if (isEditing && selectedUser) {
+        const updatedUser = await updateUser(selectedUser.id, user);
+        setUsers((prev) =>
+          prev.map((u) => (u.id === selectedUser.id ? updatedUser : u))
+        );
+        Swal.fire("Actualizado", `Usuario ${user.name} actualizado`, "success");
+      } else if (password) {
+        const newUserPayload: CreateUserPayload = { ...user, password };
+        const newUser = await createUser(newUserPayload);
+        setUsers((prev) => [...prev, newUser]);
+        Swal.fire("Creado", `Usuario ${user.name} creado`, "success");
+      }
+    } catch (error) {
+      Swal.fire("Error", "No se pudo procesar el usuario", "error");
+    } finally {
+      handleCloseModalUser(); // Cierra el modal al finalizar la acción
+      fetchData(); // Recargar los datos para reflejar los cambios
+    }
   };
 
-  const handleCloseModalEquipo = () => {
-    setShowModalequipo(false);
-  };
-
-  // Filtra los datos basado en la búsqueda
-  const filteredEquipo = equipoT.filter((equipo) =>
-    Object.values(equipo).some((value) =>
+  // Filtra usuarios por búsqueda
+  const filteredUsers = users.filter((user) =>
+    Object.values(user).some((value) =>
       String(value).toLowerCase().includes(search.toLowerCase())
     )
   );
 
+  // Definición de las columnas de la tabla
   const columns = [
-    { name: "Nombre", selector: (row: equipo) => row.nombre, sortable: true },
-    { name: "Email", selector: (row: equipo) => row.email },
-    { name: "Cedula", selector: (row: equipo) => row.cedula },
-    { name: "Telefono", selector: (row: equipo) => row.telefono },
-    { name: "Rol", selector: (row: equipo) => row.rol },
-    { name: "Zona", selector: (row: equipo) => row.zona },
+    { name: "Nombre", selector: (row: User) => row.name, sortable: true },
+    { name: "Apellido", selector: (row: User) => row.lastName },
+    { name: "Email", selector: (row: User) => row.email },
+    { name: "Cedula", selector: (row: User) => row.cedula },
+    { name: "Telefono", selector: (row: User) => row.phone },
+    {
+      name: "Rol",
+      selector: (row: User) => {
+        const role = roles.find((r) => r.id === String(row.idRol));
+        return role ? role.name : "Sin Rol";
+      },
+    },
+    {
+      name: "Zona",
+      selector: (row: User) => {
+        const zone = zones.find((z) => z.id === String(row.idZone));
+        return zone ? zone.name : "Sin Zona";
+      },
+    },
     {
       name: "Editar",
-      cell: (row: equipo) => (
+      cell: (row: User) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
       ),
       ignoreRowClick: true,
-      /* allowOverflow: true,
-      button: true, */
     },
     {
       name: "Eliminar",
-      cell: (row: equipo) => (
+      cell: (row: User) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
       ),
       ignoreRowClick: true,
-      /*  allowOverflow: true, */
-      /* button: true, */
     },
   ];
 
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavbarComponent />
-      <div className="d-flex flex-grow-1 tablaClien">
-        <SlideMenu onToggleMenu={handleToggleMenu} />
+      <div className="d-flex flex-grow-1">
+        <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
           className={`content-area-table ${
             isSlideMenuExpanded ? "expanded" : ""
@@ -179,49 +184,35 @@ const TablaEquipo: React.FC = () => {
         >
           <div className="container mt-4">
             <h1>Equipo de Trabajo</h1>
-
-            <div className="botones">
-              <div className="botonR">
-                <button className="btn btn-primary" onClick={handleGoToHome}>
-                  <FontAwesomeIcon icon={faUsers} /> Regresar
-                </button>
-              </div>
-
-              <div className="botonA">
-                <button onClick={handleCreate} className="btn btn-primary">
-                  <FontAwesomeIcon icon={faPlus} /> Crear Rol
-                </button>
-              </div>
-
-              <div className="Buscador">
-                <input
-                  type="text"
-                  className="form-control buscador"
-                  placeholder="Buscar en la tabla..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="table-responsive">
-              <StyledDataTable
-                columns={columns}
-                data={filteredEquipo}
-                pagination
-                highlightOnHover
-                pointerOnHover
-                dense
+            <div className="botones mb-4">
+              <button className="btn btn-primary" onClick={handleCreate}>
+                <FontAwesomeIcon icon={faPlus} /> Crear Usuario
+              </button>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Buscar..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+            <StyledDataTable
+              columns={columns}
+              data={filteredUsers}
+              pagination
+            />
           </div>
         </main>
       </div>
-      {showModalequipo && (
+
+      {/* Modal para crear/editar usuarios */}
+      {showModalUser && (
         <FormEquipo
-          show={showModalequipo}
-          handleClose={handleCloseModalEquipo}
-          equipo={selectedequipo}
-          isEditing={isEditing} // Pasa si está en modo edición o no
+          show={showModalUser}
+          handleClose={handleCloseModalUser}
+          equipo={selectedUser}
+          isEditing={isEditing}
+          onSubmit={handleModalSubmit}
         />
       )}
     </div>

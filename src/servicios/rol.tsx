@@ -2,7 +2,7 @@
 const port = import.meta.env.VITE_API_BASE_URL; // Asegúrate de que esta variable esté definida en tu archivo .env
 
 // Tipo para los roles (ajusta los campos según tu modelo)
-interface Role {
+export interface Role {
   id: string; // Cambia a string si tus IDs son de tipo UUID
   name: string;
 }

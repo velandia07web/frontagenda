@@ -1,16 +1,21 @@
 const port = import.meta.env.VITE_API_BASE_URL; // URL de tu API
 
 // Define la interfaz de un Usuario (sin password ni failedAttempts)
+
 export interface User {
-  id?: string; // id opcional para la creación
+  id: string; // id opcional para la creación
   name: string;
   lastName: string;
   email: string;
-  cedula: string;
+  cedula: number;
   phone: string;
-  idRol: number;
-  idZone: number;
+  idRol: string;
+  idZone: string;
   active: boolean;
+}
+
+export interface CreateUserPayload extends User {
+  password: string;
 }
 
 // Interfaz para la respuesta de la API
@@ -74,26 +79,17 @@ export const getUserById = async (id: string): Promise<User> => {
 };
 
 // Función para crear un nuevo usuario (sin incluir la contraseña en la interfaz)
-export const createUser = async (
-  user: User,
-  password: string
-): Promise<User> => {
+export const createUser = async (user: CreateUserPayload): Promise<User> => {
   try {
-    const token = localStorage.getItem("token"); // Obtén el token del localStorage
-
-    // Crea un objeto con el usuario y la contraseña
-    const newUser = {
-      ...user,
-      password, // Incluye la contraseña en el cuerpo de la solicitud
-    };
+    const token = localStorage.getItem("token");
 
     const response = await fetch(`${port}/user/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Agrega el token en el header
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(newUser), // Serializa el objeto newUser
+      body: JSON.stringify(user),
     });
 
     if (!response.ok) {

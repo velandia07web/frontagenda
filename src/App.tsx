@@ -28,7 +28,7 @@ function App() {
           <Route
             element={
               <PrivateRoute
-                allowedRoles={["e2f26662-950f-4c66-895e-7c34bf74f2d8"]}
+                allowedRoles={["7ffeb105-5710-4348-b01f-45d5e19c06d4"]}
               />
             }
           >
