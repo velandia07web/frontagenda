@@ -11,12 +11,12 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "./SlideMenu.css";
-import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
+//import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
 import FormClientes from "../formClientes/formClientes";
-import FormCiudad from "../formCiudades/formCiudades";
+//import FormCiudad from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
 //import FormRoll from "../formRoll/formRoll";
-import FormRed from "../formRedSocial/formRedSocial";
+//import FormRed from "../formRedSocial/formRedSocial";
 /* import FormZona from "../formZonas/formZonas"; */
 import { useNavigate } from "react-router-dom"; // Importar useNavigate
 
@@ -35,10 +35,10 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   const navigate = useNavigate();
 
   /* const [showModalroll, setShowModalroll] = useState(false); */
-  const [showModalEquipo, setShowModalEquipo] = useState(false);
-  const [showModalRed, setShowModalRed] = useState(false);
+  /*  const [showModalEquipo, setShowModalEquipo] = useState(false); */
+  /* const [showModalRed, setShowModalRed] = useState(false); */
   /*  const [showModalZona, setShowModalZona] = useState(false); */
-  const [showModalCiudad, setShowModalCiudad] = useState(false);
+  /* const [showModalCiudad, setShowModalCiudad] = useState(false); */
   const [showModalClientes, setShowModalClientes] = useState(false);
   const [showModalInventario, setShowModalInventario] = useState(false);
 
@@ -92,13 +92,17 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     navigate("/clientes"); // Redirige a la vista de Tabla Roll
   };
 
+  const handleNavigateToTablaProductos = () => {
+    navigate("/TablaProductos"); // Redirige a la vista de Tabla
+  };
+
   /* // logica para recibir datos al modal
   const [isEditingRoll, setIsEditingRoll] = useState(false);
   const [selectedRoll, setSelectedRoll] = useState<{
     nombreRoll: string;
   } | null>(null); */
 
-  const [isEditingequipo, setIsEditingequipo] = useState(false);
+  /*  const [isEditingequipo, setIsEditingequipo] = useState(false);
   const [selectedequipo, setSelectedequipo] = useState<{
     nombre: string;
     email: string;
@@ -106,23 +110,23 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     telefono: string;
     rol: string;
     zona: string;
-  } | null>(null);
+  } | null>(null); */
 
-  const [isEditingRed, setIsEditingRed] = useState(false);
+  /* const [isEditingRed, setIsEditingRed] = useState(false);
   const [selectedRed, setSelectedRed] = useState<{
     nombreRed: string;
-  } | null>(null);
+  } | null>(null); */
 
   /*  const [isEditingZona, setIsEditingZona] = useState(false);
   const [selectedZona, setSelectedZona] = useState<{
     nombreZona: string;
   } | null>(null); */
 
-  const [isEditingCiudad, setIsEditingCiudad] = useState(false);
+  /* const [isEditingCiudad, setIsEditingCiudad] = useState(false);
   const [selectedCiudad, setSelectedCiudad] = useState<{
     nombreCiudad: string;
     nombreZona: string;
-  } | null>(null);
+  } | null>(null); */
 
   // logica modal de formularios roll
   /* const handleOpenCreateRollModal = () => {
@@ -138,7 +142,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   }; */
 
   // modal equipo trabajo
-  const handleOpenCreateequipoModal = () => {
+  /*  const handleOpenCreateequipoModal = () => {
     setSelectedequipo(null); // No hay rol seleccionado, es un nuevo rol
     setIsEditingequipo(false); // No estamos editando
     setShowModalEquipo(true); // Abre el modal
@@ -147,19 +151,19 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setShowModalEquipo(false); // Cierra el modal
     setIsEditingequipo(false); // Resetea el modo edición
     setSelectedequipo(null); // Resetea el rol seleccionado
-  };
+  }; */
 
   // modal Red Conexion
-  const handleOpenCreateRedModal = () => {
+  /*  const handleOpenCreateRedModal = () => {
     setSelectedRed(null); // No hay rol seleccionado, es un nuevo rol
     setIsEditingRed(false); // No estamos editando
     setShowModalRed(true); // Abre el modal
-  };
-  const handleCloseModalRed = () => {
+  }; */
+  /* const handleCloseModalRed = () => {
     setShowModalRed(false); // Cierra el modal
     setIsEditingRed(false); // Resetea el modo edición
     setSelectedRed(null); // Resetea el rol seleccionado
-  };
+  }; */
 
   /*  // modal Zona
   const handleOpenCreateZonaModal = () => {
@@ -174,7 +178,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   }; */
 
   // modal ciudad
-  const handleOpenCreateCiudadModal = () => {
+  /* const handleOpenCreateCiudadModal = () => {
     setSelectedCiudad(null); // No hay rol seleccionado, es un nuevo rol
     setIsEditingCiudad(false); // No estamos editando
     setShowModalCiudad(true); // Abre el modal
@@ -183,7 +187,7 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setShowModalCiudad(false); // Cierra el modal
     setIsEditingCiudad(false); // Resetea el modo edición
     setSelectedCiudad(null); // Resetea el rol seleccionado
-  };
+  }; */
 
   const handleOpenModalClientes = () => setShowModalClientes(true);
   const handleCloseModalClientes = () => setShowModalClientes(false);
@@ -240,21 +244,21 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <FontAwesomeIcon icon={faMinus} /> Crear Roll
                   </li> */}
 
-                  <li onClick={handleOpenCreateRedModal}>
+                  {/*  <li onClick={handleOpenCreateRedModal}>
                     <FontAwesomeIcon icon={faMinus} /> Crear Red De Conexion
-                  </li>
+                  </li> */}
 
                   {/* <li onClick={handleOpenCreateZonaModal}>
                     <FontAwesomeIcon icon={faMinus} /> Crear Zona
                   </li> */}
 
-                  <li onClick={handleOpenCreateCiudadModal}>
+                  {/*  <li onClick={handleOpenCreateCiudadModal}>
                     <FontAwesomeIcon icon={faMinus} /> Ciudades
-                  </li>
+                  </li> */}
 
-                  <li onClick={handleOpenCreateequipoModal}>
+                  {/* <li onClick={handleOpenCreateequipoModal}>
                     <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
-                  </li>
+                  </li> */}
 
                   <li onClick={handleOpenModalClientes}>
                     <FontAwesomeIcon icon={faMinus} /> Clientes
@@ -346,6 +350,11 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Clientes</span>
                   </li>
+
+                  <li onClick={handleNavigateToTablaProductos}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Productos</span>
+                  </li>
                   <li>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Inventario</span>
@@ -371,23 +380,23 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         />
       )}*/}
 
-      {showModalEquipo && (
+      {/*  {showModalEquipo && (
         <FormEquipo
           show={showModalEquipo}
           handleClose={handleCloseModalequipo}
           equipo={selectedequipo} // Pasa el rol seleccionado o null
           isEditing={isEditingequipo} // Pasa si estamos editando o creando
         />
-      )}
+      )} */}
 
-      {showModalRed && (
+      {/* {showModalRed && (
         <FormRed
           show={showModalRed}
           handleClose={handleCloseModalRed}
           roll={selectedRed} // Pasa el rol seleccionado o null
           isEditing={isEditingRed} // Pasa si estamos editando o creando
         />
-      )}
+      )} */}
 
       {/*   {showModalZona && (
         <FormZona
@@ -398,14 +407,14 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         />
       )} */}
 
-      {showModalCiudad && (
+      {/*  {showModalCiudad && (
         <FormCiudad
           show={showModalCiudad}
           handleClose={handleCloseModalCiudad}
           ciudad={selectedCiudad} // Pasa el rol seleccionado o null
           isEditing={isEditingCiudad} // Pasa si estamos editando o creando
         />
-      )}
+      )} */}
 
       {showModalClientes && (
         <FormClientes

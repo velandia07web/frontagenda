@@ -11,3 +11,15 @@ button {
 button:hover {
   background-color: #005f5f;
 }
+.password-wrapper {
+  position: relative;
+}
+
+span.password-toggle-icon.eye {
+  position: absolute;
+  top: 50%;
+  right: 34px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
-import { getAllRoles, Role } from "../../servicios/rol"; // Importa el servicio de roles
-import { getAllZones, Zone } from "../../servicios/zone"; // Importa el servicio de zonas
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { getAllRoles, Role } from "../../servicios/rol";
+import { getAllZones, Zone } from "../../servicios/zone";
 
 interface FormEquipoProps {
   show: boolean;
@@ -14,10 +14,10 @@ interface FormEquipoProps {
     phone: string;
     idRol: string;
     idZone: string;
-    active?: boolean; // Agregado para el estado 'active'
-  } | null; // El equipo seleccionado o null si es nuevo
-  isEditing: boolean; // Si estamos en modo edición o no
-  onSubmit: (user: any, password?: string) => void; // Función de submit
+    active?: boolean;
+  } | null;
+  isEditing: boolean;
+  onSubmit: (user: any, password?: string) => void;
 }
 
 const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
@@ -36,9 +36,12 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
   const [confirmarContraseña, setConfirmarContrasena] = useState("");
   const [rol, setRol] = useState("");
   const [zona, setZona] = useState("");
-  const [active, setActive] = useState(true); // Nuevo estado para 'active'
-  const [roles, setRoles] = useState<Role[]>([]); // Estado para los roles
-  const [zonas, setZonas] = useState<Zone[]>([]); // Estado para las zonas
+  const [active, setActive] = useState(true);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [zonas, setZonas] = useState<Zone[]>([]);
+  const [errorContraseña, setErrorContraseña] = useState(false); // Estado para el error de contraseña
+  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
+  const [alertMessage, setAlertMessage] = useState(""); // Mensaje de alerta
 
   useEffect(() => {
     if (isEditing && equipo) {
@@ -57,7 +60,6 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
     }
   }, [isEditing, equipo]);
 
-  // Efecto para cargar roles y zonas al abrir el modal
   useEffect(() => {
     if (show) {
       fetchRolesAndZones();
@@ -67,9 +69,9 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
   const fetchRolesAndZones = async () => {
     try {
       const rolesData = await getAllRoles();
-      setRoles(rolesData.data.rows); // Poblamos los roles
+      setRoles(rolesData.data.rows);
       const zonasData = await getAllZones();
-      setZonas(zonasData); // Poblamos las zonas
+      setZonas(zonasData);
     } catch (error) {
       console.error("Error al cargar roles y zonas:", error);
     }
@@ -86,14 +88,20 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
     setRol("");
     setZona("");
     setActive(true);
+    setErrorContraseña(false);
+    setShowAlert(false); // Resetear el estado de la alerta
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!isEditing && contraseña !== confirmarContraseña) {
-      alert("Las contraseñas no coinciden.");
+      setErrorContraseña(true);
+      setAlertMessage("Las contraseñas no coinciden.");
+      setShowAlert(true);
       return;
     }
+
     const userData = {
       name: nombre,
       lastName: apellido,
@@ -104,6 +112,7 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
       idZone: zona,
       active,
     };
+
     onSubmit(userData, isEditing ? undefined : contraseña);
     handleClose();
   };
@@ -116,6 +125,15 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {showAlert && (
+          <Alert
+            variant="danger"
+            onClose={() => setShowAlert(false)}
+            dismissible
+          >
+            {alertMessage}
+          </Alert>
+        )}
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="nombre">
             <Form.Label>Nombre</Form.Label>
@@ -175,9 +193,18 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
                 <Form.Control
                   type="password"
                   value={contraseña}
-                  onChange={(e) => setContrasena(e.target.value)}
+                  onChange={(e) => {
+                    setContrasena(e.target.value);
+                    setErrorContraseña(false);
+                  }}
+                  isInvalid={errorContraseña} // Estilo para invalidación
                   required
                 />
+                {errorContraseña && (
+                  <Form.Control.Feedback type="invalid">
+                    Las contraseñas no coinciden.
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
 
               <Form.Group controlId="confirmarContraseña">
@@ -185,9 +212,18 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
                 <Form.Control
                   type="password"
                   value={confirmarContraseña}
-                  onChange={(e) => setConfirmarContrasena(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmarContrasena(e.target.value);
+                    setErrorContraseña(false);
+                  }}
+                  isInvalid={errorContraseña} // Estilo para invalidación
                   required
                 />
+                {errorContraseña && (
+                  <Form.Control.Feedback type="invalid">
+                    Las contraseñas no coinciden.
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
             </>
           )}

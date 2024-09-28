@@ -10,6 +10,7 @@ import TablaRoll from "./components/tablaRoll/tablaRoll";
 import TablaEquipo from "./components/tablaEquipoTrabajo/tablaEquipo";
 import TablaRed from "./components/tablaRedSocial/RedSocial";
 import TablaZona from "./components/tablaZona/tablaZona";
+import TablaProductos from "./components/tablaProductos/tablaProductos";
 import TablaCiudades from "./components/tablaCiudades/tablaCiudades";
 import CambioContrasena from "./components/CambioContrasena/CambioContrasena";
 import PrivateRoute from "./components/auth/privateRoute"; // Importa tu PrivateRoute
@@ -40,6 +41,7 @@ function App() {
             <Route path="/red" element={<TablaRed />} />
             <Route path="/zona" element={<TablaZona />} />
             <Route path="/ciudad" element={<TablaCiudades />} />
+            <Route path="/TablaProductos" element={<TablaProductos />} />
           </Route>
 
           {/* Rutas protegidas para el comercial */}

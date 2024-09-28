@@ -85,7 +85,7 @@ const CambioContraseña: React.FC = () => {
                 password && !passwordsMatch ? "no-match" : ""
               }`}
               required
-              placeholder="Ingresa Nueva Contraseña"
+              placeholder="Ingresa Contraseña"
               onPaste={(e) => e.preventDefault()} // Prevenir pegar en este campo
             />
             <span
