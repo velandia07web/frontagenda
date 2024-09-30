@@ -26,12 +26,23 @@ const HomePage: React.FC = () => {
     navigate("/clientes"); // Navega a la ruta de la tabla de clientes
   };
 
-  const goToroll = () => {
-    navigate("/roll"); // Navega a la ruta de la tabla de roll
+  const goTored = () => {
+    navigate("/red"); // Navega a la ruta de la tabla de roll
+  };
+
+  const goTozonas = () => {
+    navigate("/zona"); // Navega a la ruta de la tabla de roll
+  };
+
+  const goTociudades = () => {
+    navigate("/ciudad"); // Navega a la ruta de la tabla de roll
   };
 
   const goToequipo = () => {
     navigate("/equipo"); // Navega a la ruta de la tabla de roll
+  };
+  const goToproductos = () => {
+    navigate("/TablaProductos"); // Navega a la ruta de la tabla de roll
   };
 
   return (
@@ -43,26 +54,35 @@ const HomePage: React.FC = () => {
           className={`content-area ${isSlideMenuExpanded ? "expanded" : ""}`}
         >
           <div className="dashboard-cards">
-            <div className="card" onClick={goToroll}>
-              {" "}
+            <div className="card" onClick={goTored}>
               <FontAwesomeIcon icon={faPuzzlePiece} className="card-icon" />
-              <h3>Tabla Roll</h3>
+              <h3>Tabla Redes</h3>
             </div>
+
+            <div className="card" onClick={goTozonas}>
+              <FontAwesomeIcon icon={faPuzzlePiece} className="card-icon" />
+              <h3>Tabla Zonas</h3>
+            </div>
+
+            <div className="card" onClick={goTociudades}>
+              <FontAwesomeIcon icon={faCity} className="card-icon" />
+              <h3>Ciudades</h3>
+            </div>
+
             <div className="card" onClick={goToequipo}>
-              {" "}
               <FontAwesomeIcon icon={faCog} className="card-icon" />
               <h3>Equipo de Trabajo</h3>
             </div>
 
+            <div className="card" onClick={goToproductos}>
+              <FontAwesomeIcon icon={faBoxes} className="card-icon" />
+              <h3>Inventario</h3>
+            </div>
+
             <div className="card" onClick={goToClientes}>
-              {" "}
               {/* Agrega el evento de clic */}
               <FontAwesomeIcon icon={faUsers} className="card-icon" />
               <h3>Clientes</h3>
-            </div>
-            <div className="card">
-              <FontAwesomeIcon icon={faBoxes} className="card-icon" />
-              <h3>Inventario</h3>
             </div>
 
             <div className="card">
@@ -77,10 +97,6 @@ const HomePage: React.FC = () => {
             <div className="card">
               <FontAwesomeIcon icon={faTag} className="card-icon" />
               <h3>Precios</h3>
-            </div>
-            <div className="card">
-              <FontAwesomeIcon icon={faCity} className="card-icon" />
-              <h3>Ciudades</h3>
             </div>
           </div>
         </main>

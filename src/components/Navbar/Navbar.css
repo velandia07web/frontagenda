@@ -27,11 +27,15 @@
   margin-left: 206px !important;
 }
 
-@media (min-width: 1200px) {
+/* @media (min-width: 1200px) {
   .container {
     max-width: 1140px;
     margin-left: 200px;
   }
+} */
+
+.navbarA {
+  margin-left: 50%;
 }
 
 .dropdown-menu[data-bs-popper] {

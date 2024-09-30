@@ -68,9 +68,9 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   };
 
   // constane para navegar en las tablas y vistas al dar click en slide
-  const handleNavigateToTablaRoll = () => {
+  /* const handleNavigateToTablaRoll = () => {
     navigate("/roll"); // Redirige a la vista de Tabla
-  };
+  }; */
 
   const handleNavigateToTablaequipo = () => {
     navigate("/equipo"); // Redirige a la vista de Tabla
@@ -321,10 +321,10 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
               </div>
               {isSubMenuOpen.usuarios && (isExpanded || isHovered) && (
                 <ul className="submenu">
-                  <li onClick={handleNavigateToTablaRoll}>
+                  {/* <li onClick={handleNavigateToTablaRoll}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Tabla Roll</span>
-                  </li>
+                  </li> */}
 
                   <li onClick={handleNavigateToTablaRed}>
                     <FontAwesomeIcon icon={faMinus} />
@@ -346,19 +346,16 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <span>Equipo de Trabajo</span>
                   </li>
 
+                  <li onClick={handleNavigateToTablaProductos}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Inventario</span>
+                  </li>
+
                   <li onClick={handleNavigateToTablaclientes}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Clientes</span>
                   </li>
 
-                  <li onClick={handleNavigateToTablaProductos}>
-                    <FontAwesomeIcon icon={faMinus} />
-                    <span>Productos</span>
-                  </li>
-                  <li>
-                    <FontAwesomeIcon icon={faMinus} />
-                    <span>Inventario</span>
-                  </li>
                   <li>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Productos adicionales</span>

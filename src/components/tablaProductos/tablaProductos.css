@@ -1,0 +1,223 @@
+.table-container {
+  position: relative;
+}
+
+.containerProductos {
+  width: 78%;
+  margin-left: 13%;
+}
+
+.table-responsive {
+  overflow: auto; /* Asegura que la tabla sea desplazable si es necesario */
+  margin-bottom: 1rem; /* Espacio en la parte inferior de la tabla */
+  margin-left: 10%;
+}
+
+.data-table {
+  width: 100%; /* Asegura que la tabla ocupe el ancho completo del contenedor */
+}
+
+input.form-control.buscador {
+  margin-left: 79%;
+  width: 18%;
+}
+
+.table-responsive {
+  margin-top: 20px;
+}
+
+.form-control {
+  width: 100%;
+  max-width: 400px;
+}
+
+.mb-3 {
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  transition: background-color 0.3s ease;
+}
+
+/* Estilos para el botón de regresar */
+.btn-primary.regresar {
+  background-color: #007072;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-primary.regresar:hover {
+  background-color: #007072;
+  transition: background-color 0.3s ease;
+}
+/* Estilos generales para la tabla */
+.table-responsive .rdt_Table {
+  border: 1px solid #007072;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #007072;
+}
+
+.rdt_TableHead {
+  background-color: #007072;
+  color: #ffffff;
+}
+
+.rdt_TableHead .rdt_TableCol {
+  font-weight: bold;
+  padding: 12px;
+  text-align: center;
+}
+
+.rdt_TableBody {
+  background-color: #ffffff;
+}
+
+.rdt_TableRow {
+  border-bottom: 1px solid #cccccc;
+  transition: background-color 0.3s;
+}
+
+.rdt_TableRow:nth-child(even) {
+  background-color: #c6cdcd; /* Alterna colores en filas */
+}
+
+.rdt_TableRow:hover {
+  background-color: #007072; /* Color de hover en fila */
+}
+
+.rdt_TableCol {
+  padding: 12px;
+  text-align: center;
+}
+
+.table-responsive .btn-link {
+  color: #007072;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.table-responsive .btn-link:hover {
+  color: #cacece;
+}
+
+/* Paginación */
+.rdt_Pagination {
+  background-color: #e6f7ff;
+  padding: 10px;
+  border-top: 1px solid #cccccc;
+}
+
+.rdt_Pagination button {
+  background-color: #ced2d5;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 2px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.rdt_Pagination button:hover {
+  background-color: #ccd0d0;
+}
+
+/* Estilos para el buscador */
+.buscador {
+  border: 1px solid #005b96;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.buscador:focus {
+  border-color: #003f6b;
+  outline: none;
+}
+
+/* Botones principales */
+.btn-primary {
+  background-color: #005b96;
+  border-color: #005b96;
+}
+
+.btn-primary:hover {
+  background-color: #003f6b;
+  border-color: #003f6b;
+}
+
+.botonesP {
+  display: flex;
+  margin-left: 70%;
+}
+
+button.btn.btn-primary.crear {
+  padding: 7px;
+  width: 142px;
+}
+.BuscadorP {
+  margin-left: 5px;
+}
+input.form-control.buscador {
+  /* margin-left: 79%; */
+  width: 200px !important;
+  margin-left: 5px !important;
+}
+.botonR {
+  margin-right: 10px;
+  margin-left: -20px;
+}
+.botonA {
+  margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+  .data-table {
+    font-size: 0.9rem; /* Ajusta el tamaño de fuente en pantallas pequeñas */
+  }
+  .table-responsive {
+    overflow: auto; /* Asegura que la tabla sea desplazable si es necesario */
+    margin-bottom: 1rem; /* Espacio en la parte inferior de la tabla */
+    margin-left: 0%;
+    width: 90%;
+    table-layout: auto;
+  }
+
+  .d-flex.flex-grow-1.tablaClien {
+    /* Altura máxima que permitirá el scroll si hay muchas filas */
+    overflow-x: auto; /* Permite el scroll horizontal solo en la tabla */
+    overflow-y: hidden; /* Asegúrate de que el scroll vertical no afecte la pantalla */
+    display: block; /* Importante para garantizar que el contenedor se comporte correctamente */
+    width: 100%; /* Asegura que el contenedor use el 100% del ancho disponible */
+    box-sizing: border-box; /* Para evitar que el padding/margen afecten el tamaño */
+  }
+  input.form-control.buscador {
+    margin-left: 7px !important;
+    width: 120px !important;
+  }
+
+  .containerProductos {
+    width: 403px;
+    margin-left: 28px;
+  }
+  .botonesP {
+    display: flex;
+    margin-left: 71px;
+  }
+  button.btn.btn-primary.crear {
+    padding: 7px;
+    width: 142px;
+  }
+}
+/* Ajustes para cuando el SlideMenu está expandido */

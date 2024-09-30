@@ -22,7 +22,7 @@ const NavbarComponent: React.FC = () => {
 
   return (
     <Navbar expand="lg" className="custom-navbar">
-      <Container className="custom-container">
+      <Container className="navbarA">
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end">
           <Nav

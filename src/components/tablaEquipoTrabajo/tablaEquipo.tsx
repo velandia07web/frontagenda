@@ -12,7 +12,7 @@ import { getAllRoles, Role } from "../../servicios/rol"; // Servicios de roles
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaEquipo.css";
@@ -175,32 +175,39 @@ const TablaEquipo: React.FC = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavbarComponent />
-      <div className="d-flex flex-grow-1">
+      <div className="d-flex flex-grow-1 tablaClien">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
           className={`content-area-table ${
             isSlideMenuExpanded ? "expanded" : ""
           }`}
         >
-          <div className="container mt-4">
-            <h1>Equipo de Trabajo</h1>
-            <div className="botones mb-4">
-              <button className="btn btn-primary" onClick={handleCreate}>
-                <FontAwesomeIcon icon={faPlus} /> Crear Usuario
+          <div className="containerEquipo">
+            <h1 className="text-center titulo-tabla">Tabla de Equipo</h1>{" "}
+            <div className="botonesE">
+              <button className="btn btn-primary crear" onClick={handleCreate}>
+                <h6>crear Usuario</h6>
               </button>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Buscar..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+              <div className="BuscadorE">
+                <input
+                  type="text"
+                  className="form-control buscador"
+                  placeholder="Buscar "
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="table-responsive">
+              <StyledDataTable
+                columns={columns}
+                data={filteredUsers}
+                pagination
+                highlightOnHover
+                pointerOnHover
+                dense
               />
             </div>
-            <StyledDataTable
-              columns={columns}
-              data={filteredUsers}
-              pagination
-            />
           </div>
         </main>
       </div>

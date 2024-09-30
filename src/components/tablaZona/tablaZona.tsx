@@ -8,14 +8,9 @@ import {
 } from "../../servicios/zone"; // Importa los servicios
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsers,
-  faEdit,
-  faTrash,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaZona.css"; // Importa el archivo CSS
@@ -34,7 +29,7 @@ const TablaZona: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showModalZona, setShowModalZona] = useState(false);
   const [zonas, setZonas] = useState<Zone[]>([]); // Estado para las zonas
-  const navigate = useNavigate(); // Hook para navegación
+  //const navigate = useNavigate(); // Hook para navegación
 
   const fetchZones = async () => {
     try {
@@ -150,24 +145,28 @@ const TablaZona: React.FC = () => {
             isSlideMenuExpanded ? "expanded" : ""
           }`}
         >
-          <div className="container mt-4">
-            <div className="botones">
-              <button
+          <div className="containerZ">
+            <h1 className="text-center titulo-tabla">Tabla de zonas</h1>{" "}
+            {/* Título centrado */}
+            <div className="botonesZ">
+              {/* <button
                 className="btn btn-primary"
                 onClick={() => navigate("/home")}
               >
                 <FontAwesomeIcon icon={faUsers} />
+              </button> */}
+              <button onClick={handleCreate} className="btn btn-primary crear">
+                <h6>crear Zona</h6>
               </button>
-              <button onClick={handleCreate} className="btn btn-primary">
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-              <input
-                type="text"
-                className="form-control buscador"
-                placeholder="Buscar en la tabla..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+              <div className="BuscadorZ">
+                <input
+                  type="text"
+                  className="form-control buscador"
+                  placeholder="Buscar "
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
             </div>
             <div className="table-responsive">
               <StyledDataTable

@@ -8,14 +8,9 @@ import {
 } from "../../servicios/city";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsers,
-  faEdit,
-  faTrash,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaCiudades.css";
@@ -36,7 +31,7 @@ const TablaCiudad: React.FC = () => {
   const [showModalCiudad, setShowModalCiudad] = useState(false);
   const [ciudades, setCiudades] = useState<City[]>([]);
   const [zonas, setZonas] = useState<Zone[]>([]);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const fetchCities = async () => {
     try {
@@ -168,24 +163,27 @@ const TablaCiudad: React.FC = () => {
             isSlideMenuExpanded ? "expanded" : ""
           }`}
         >
-          <div className="container mt-4">
-            <div className="botones">
-              <button
+          <div className="containerCiudad">
+            <h1 className="text-center titulo-tabla">Tabla de Ciudades</h1>{" "}
+            <div className="botonesC">
+              {/* <button
                 className="btn btn-primary"
                 onClick={() => navigate("/home")}
               >
                 <FontAwesomeIcon icon={faUsers} />
+              </button> */}
+              <button onClick={handleCreate} className="btn btn-primary crear">
+                <h6>crear Ciudad</h6>
               </button>
-              <button onClick={handleCreate} className="btn btn-primary">
-                <FontAwesomeIcon icon={faPlus} /> Crear Ciudad
-              </button>
-              <input
-                type="text"
-                className="form-control buscador"
-                placeholder="Buscar en la tabla..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+              <div className="BuscadorC">
+                <input
+                  type="text"
+                  className="form-control buscador"
+                  placeholder="Buscar "
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
             </div>
             <div className="table-responsive">
               <StyledDataTable

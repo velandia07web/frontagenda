@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsers,
-  faEdit,
-  faTrash,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaRedSocial.css"; // Importa el archivo CSS
@@ -34,7 +29,7 @@ const TablaRed: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición o creación
   const [showModalRed, setShowModalRed] = useState(false); // Estado para mostrar el modal
   const [socialMedias, setSocialMedias] = useState<SocialMedia[]>([]); // Estado para almacenar las redes sociales
-  const navigate = useNavigate(); // Hook para navegación
+  //const navigate = useNavigate(); // Hook para navegación
 
   // Cargar las redes sociales cuando el componente se monta
   const fetchSocialMedias = async () => {
@@ -144,7 +139,10 @@ const TablaRed: React.FC = () => {
     {
       name: "Eliminar",
       cell: (row: SocialMedia) => (
-        <button className="btn btn-link" onClick={() => handleDelete(row)}>
+        <button
+          className="btn btn-link eliminar"
+          onClick={() => handleDelete(row)}
+        >
           <FontAwesomeIcon icon={faTrash} />
         </button>
       ),
@@ -162,22 +160,24 @@ const TablaRed: React.FC = () => {
             isSlideMenuExpanded ? "expanded" : ""
           }`}
         >
-          <div className="container mt-4">
-            <div className="botones">
-              <button
+          <div className="containerRed">
+            <h1 className="text-center titulo-tabla">Tabla de Redes</h1>{" "}
+            {/* Título centrado */}
+            <div className="botonesR">
+              {/* <button
                 className="btn btn-primary"
                 onClick={() => navigate("/home")}
               >
                 <FontAwesomeIcon icon={faUsers} /> Regresar
+              </button> */}
+              <button onClick={handleCreate} className="btn btn-primary crear">
+                <h6>crear Red</h6>
               </button>
-              <button onClick={handleCreate} className="btn btn-primary">
-                <FontAwesomeIcon icon={faPlus} /> Crear Red Social
-              </button>
-              <div className="Buscador">
+              <div className="BuscadorR">
                 <input
                   type="text"
                   className="form-control buscador"
-                  placeholder="Buscar en la tabla..."
+                  placeholder="Buscar "
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
