@@ -18,7 +18,163 @@ interface ProductsResponse {
     count: number;
     rows: Product[]; // rows es un arreglo de Product
   };
+} 
+
+export interface productPrice {
+  id?: string;
+  name: string;
+  hour: string;
+  price: number;
+  priceDeadHour: number
+  typePrice: string;
 }
+
+
+interface productPriceResponse {
+  status: number;
+  message: string;
+  data: productPrice[]  
+}
+
+export interface Price {
+  hour: string;
+  price: number;
+}
+
+export interface ProductPriceElement {
+  id: string;
+  name: string;
+  prices: Price[];
+}
+
+export interface AddPriceElement {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface PackPriceElement {
+  id: string;
+  name: string;
+}
+
+export interface PriceElements {
+  products: ProductPriceElement[];
+  adds: AddPriceElement[];
+  packs: PackPriceElement[];
+}
+
+interface PriceElementsResponse {
+  status: number;
+  message: string;
+  data: PriceElements;
+}
+
+
+export const getAllProductsByTypePrice = async (id: string): Promise<PriceElements> => {
+  try {
+    const token = localStorage.getItem("token"); // Obtiene el token del localStorage
+
+    const response = await fetch(`${port}/product/products-data?idTypePrice=${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Agrega el token en el header
+      },
+    });
+     
+    if(!response.ok){
+      throw new Error ("Error al obtener todos los precios de los productos")
+    }
+
+    const data: PriceElementsResponse = await response.json();
+    return data.data
+  } catch (error) {
+    console.error("Error en getAllProductsbyZone:", error);
+    throw error; // Maneja el error según tus necesidades
+  }
+}
+
+
+export const getAllProductsWithPrice = async (id: string): Promise<productPrice[]> => {
+  try {
+    const token = localStorage.getItem("token"); // Obtiene el token del localStorage
+
+    const response = await fetch(`${port}/product/prices-by-zone?idZone=${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Agrega el token en el header
+      },
+    });
+     
+    if(!response.ok){
+      throw new Error ("Error al obtener todos los precios de los productos")
+    }
+
+    const data: productPriceResponse = await response.json();
+    return data.data
+  } catch (error) {
+    console.error("Error en getAllProductsbyZone:", error);
+    throw error; // Maneja el error según tus necesidades
+  }
+}
+export const deleteProductPrice = async (id: string): Promise<void> => {
+  try {
+    const token = localStorage.getItem("token"); // Obtén el token del localStorage
+
+    const response = await fetch(`${port}/product/product-price/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`, // Agrega el token en el header
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al eliminar el producto");
+    }
+  } catch (error) {
+    console.error("Error en deleteProductPrice:", error);
+    throw error;
+  }
+};
+// Función para actualizar un producto existente
+export const putProductPrice = async (
+  id: string,
+  price: number,       // Solo pasas los valores que deseas actualizar
+  priceDeadHour: number
+): Promise<productPrice> => {
+  try {
+
+    console.log(priceDeadHour)
+    console.log(price)
+    const token = localStorage.getItem("token"); // Obtén el token del localStorage
+
+    const response = await fetch(`${port}/product/product-price/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Agrega el token en el header
+      },
+      body: JSON.stringify({
+        price: price,             // Solo pasas los campos que necesitas actualizar
+        priceDeadHour : priceDeadHour,     // Solo pasas los campos que necesitas actualizar
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al actualizar el putProductPrice");
+    }
+
+    const data = await response.json();
+    return data; // Devuelve el producto actualizado
+  } catch (error) {
+    console.error("Error en updateProduct:", error);
+    throw error;
+  }
+};
+
+
 
 // Función para obtener todos los productos
 export const getAllProducts = async (): Promise<Product[]> => {

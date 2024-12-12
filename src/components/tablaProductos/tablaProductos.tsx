@@ -122,6 +122,7 @@ const TablaProductos: React.FC = () => {
     }
   };
 
+
   const filteredProductos = productos.filter((producto) =>
     Object.values(producto).some((value) =>
       value.toString().toLowerCase().includes(search.toLowerCase())
@@ -192,7 +193,7 @@ const TablaProductos: React.FC = () => {
           }`}
         >
           <div className="containerProductos">
-            <h1 className="text-center titulo-tabla">Tabla de Inventario</h1>{" "}
+            <h1 className="text-center titulo-tabla">Tabla de cabinas</h1>{" "}
             <div className="botonesP">
               {/* <button
                 className="btn btn-primary"

@@ -15,6 +15,16 @@ import TablaCiudades from "./components/tablaCiudades/tablaCiudades";
 import CambioContrasena from "./components/CambioContrasena/CambioContrasena";
 import PrivateRoute from "./components/auth/privateRoute"; // Importa tu PrivateRoute
 import { AuthProvider } from "./components/context/AuthContext"; // Asegúrate de importar tu AuthProvider
+import CotizacionPage from "./components/cotizacion/cotizacion";
+import FormCotization from "./components/formCotizacion/formCotizacion";
+import HomeInventory from "./components/HomeInventory/HomeInventory";
+import TablaAdds from "./components/tablaAdds/tablaAdds";
+import TablaPacks from "./components/tablaPacks/tablaPacks";
+import HomeClient from "./components/HomeClients/HomeClient";
+import TablaEmpresas from "./components/tablaEmpresas/tablaEmpresas";
+import TablaPreciosPorZona from "./components/PrecioPorZona/PrecioPorZona";
+import TablaPrecios from "./components/tableHours/tableHours";
+
 function App() {
   return (
     <AuthProvider>
@@ -29,7 +39,7 @@ function App() {
           <Route
             element={
               <PrivateRoute
-                allowedRoles={["7ffeb105-5710-4348-b01f-45d5e19c06d4"]}
+                allowedRoles={["7ffeb105-5710-4348-b01f-45d5e19c06d4", "b7b46a2a-3161-4866-ab7d-6f6d8cffee36"]}
               />
             }
           >
@@ -42,6 +52,15 @@ function App() {
             <Route path="/zona" element={<TablaZona />} />
             <Route path="/ciudad" element={<TablaCiudades />} />
             <Route path="/TablaProductos" element={<TablaProductos />} />
+            <Route path="/Cotizacion" element={<CotizacionPage />} />
+            <Route path="/homeInventory" element={<HomeInventory />} />
+            <Route path="/TablaPacks" element={<TablaPacks />} />
+            <Route path="/TablaAdds" element={<TablaAdds />} />
+            <Route path="/HomeClient" element={<HomeClient />} />
+            <Route path="/TablaEmpresas" element={<TablaEmpresas />} />
+            <Route path="/PreciosPorZona" element={<TablaPreciosPorZona />} />
+            <Route path="/tablaPrecios/:idZone" element={<TablaPrecios />} />
+            <Route path="/Crear_Cotizacion" element={<FormCotization reference={""} clientId={""} discount={0} typePricesId={""} telephone={""} SocialMediasId={""} email={""} events={[]} />} />
           </Route>
 
           {/* Rutas protegidas para el comercial */}

@@ -3,85 +3,68 @@ import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsers,
-  faEdit,
-  faTrash,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./tablaClientes.css"; // Importa el archivo CSS
-import FormClientes from "../formClientes/formClientes";
-import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
+import "./tablaEmpresas.css";
+import FormCompanies from "../formCompany/formCompany.tsx";
+import Swal, { SweetAlertResult } from "sweetalert2";
 import styled from "styled-components";
-import { Client, getAllClients, deleteClient } from "../../servicios/clients";
+import { Company, getAllCompanies, deleteCompany } from "../../servicios/Company.tsx";
 
 const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
   // Aquí van tus estilos personalizados
 `;
 
-const TablaClientes: React.FC = () => {
+const TablaEmpresas: React.FC = () => {
   const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [showModalClientes, setShowModalClientes] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | undefined>();
-  const [clientList, setClientList] = useState<Array<Client>>(); // Lista dinámica de clientes
+  const [showModalCompany, setShowModalCompany] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<Company | undefined>();
+  const [companyList, setCompanyList] = useState<Array<Company>>(); // Lista dinámica de empresas
   const navigate = useNavigate();
 
   const handleToggleMenu = (isExpanded: boolean) => setIsSlideMenuExpanded(isExpanded);
   const handleGoToHome = () => navigate("/home");
 
-  const handleOpenModalClientes = (client?: Client) => {
-    setSelectedClient(client); // Establece el cliente seleccionado o ninguno
-    setShowModalClientes(true);
+  const handleOpenModalClientes = (company?: Company) => {
+    setSelectedCompany(company); // Establece la empresa seleccionada o ninguna
+    setShowModalCompany(true);
   };
 
   const handleCloseModalClientes = () => {
-    setShowModalClientes(false);
-    setSelectedClient(undefined); // Limpia el cliente seleccionado
+    setShowModalCompany(false);
+    setSelectedCompany(undefined); // Limpia la empresa seleccionada
   };
 
-  const handleSaveClient = (newClient: Client) => {
-    console.log('Saving client:', newClient);
-  
-    if (newClient.id) {
-      // Update existing client
-      setClientList((prevClients) => {
-        if (!prevClients) return [newClient];
-        
-        const updatedClients = prevClients.map((client) => 
-          client.id === newClient.id ? newClient : client
-        );
-        
-        console.log('Updated client list:', updatedClients);
-        return updatedClients;
-      });
+  const handleSaveCompany = (newCompany: Company) => {
+    if (newCompany.id) {
+      // Actualizar empresa existente
+      setCompanyList((prevCompanies) =>
+        prevCompanies?.map((company) =>
+          company.id === newCompany.id ? newCompany : company
+        )
+      );
     } else {
-      // Add new client
-      setClientList((prevClients) => {
-        const newClientList = [...(prevClients || []), newClient];
-        console.log('New client list:', newClientList);
-        return newClientList;
-      });
+      // Añadir nueva empresa
+      setCompanyList((prevCompanies) => [...(prevCompanies || []), newCompany]);
     }
   };
-  
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const clientsData = await getAllClients()
-        setClientList(clientsData)
+        const companiesData = await getAllCompanies();
+        setCompanyList(companiesData);
       } catch (error) {
-        console.error("Error al obtener todos los clientes; ", error)
+        console.error("Error al obtener todas las empresas: ", error);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  const handleDelete = (row: Client) => {
+  const handleDelete = (row: Company) => {
     Swal.fire({
       title: `¿Estás seguro de que deseas eliminar a ${row.name}?`,
       text: "Esta acción no se puede deshacer.",
@@ -92,51 +75,44 @@ const TablaClientes: React.FC = () => {
     }).then(async (result: SweetAlertResult) => {
       if (result.isConfirmed) {
         try {
-          // Llamar a la función deleteClient para eliminar el cliente en la base de datos
-          await deleteClient(row.id || "");
-  
-          // Mostrar el mensaje de éxito
+          await deleteCompany(row.id || "");
           Swal.fire({
             title: "Eliminado",
-            text: `Cliente ${row.name} eliminado`,
+            text: `Empresa ${row.name} eliminada`,
             icon: "success",
             confirmButtonText: "OK",
           });
-  
-          // Actualizar la lista de clientes (eliminando al cliente localmente)
-          setClientList(clientList?.filter((client) => client.id !== row.id));
+          setCompanyList(companyList?.filter((company) => company.id !== row.id));
         } catch (error) {
-          // Manejo de errores si la eliminación falla
           Swal.fire({
             title: "Error",
-            text: "No se pudo eliminar el cliente.",
+            text: "No se pudo eliminar la empresa.",
             icon: "error",
             confirmButtonText: "OK",
           });
-          console.error("Error al eliminar el cliente:", error);
+          console.error("Error al eliminar la empresa:", error);
         }
       }
     });
   };
-  
 
-  const filteredClientes = clientList?.filter((cliente) =>
-    Object.values(cliente).some((value) =>
-      value.toString().toLowerCase().includes(search.toLowerCase())
+  const filteredCompanies = companyList?.filter((company) =>
+    Object.values(company).some((value) =>
+      value?.toString().toLowerCase().includes(search.toLowerCase())
     )
   );
 
   const columns = [
-    { name: "Nombre", selector: (row: Client) => row.name, sortable: true },
-    { name: "Apellido", selector: (row: Client) => row.lastName, sortable: true },
-    { name: "Compañia", selector: (row: Client) => row.idCompany, sortable: true },
-    { name: "Correo", selector: (row: Client) => row.email, sortable: true },
-    { name: "Documento de la persona a cargo", selector: (row: Client) => row.CC, sortable: true },
-    { name: "Cupo", selector: (row: Client) => row.cupoDisponible, sortable: true },
-    { name: "Cupo ocupado", selector: (row: Client) => row.cupoCopado, sortable: true },
+    { name: "Nombre", selector: (row: Company) => row.name, sortable: true },
+    { name: "Nombre Legal", selector: (row: Company) => row.legalName, sortable: true },
+    { name: "Correo", selector: (row: Company) => row.email, sortable: true },
+    { name: "Teléfono", selector: (row: Company) => row.phone, sortable: true },
+    { name: "Dirección", selector: (row: Company) => row.address || "No especificado", sortable: true },
+    { name: "Sitio Web", selector: (row: Company) => row.website || "No especificado", sortable: true },
+    { name: "Industria", selector: (row: Company) => row.industry || "No especificado", sortable: true },
     {
       name: "Editar",
-      cell: (row: Client) => (
+      cell: (row: Company) => (
         <button className="btn btn-link" onClick={() => handleOpenModalClientes(row)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
@@ -145,7 +121,7 @@ const TablaClientes: React.FC = () => {
     },
     {
       name: "Eliminar",
-      cell: (row: Client) => (
+      cell: (row: Company) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -173,7 +149,7 @@ const TablaClientes: React.FC = () => {
                   onClick={() => handleOpenModalClientes()}
                   className="btn btn-primary"
                 >
-                  <FontAwesomeIcon icon={faPlus} /> Añadir Cliente
+                  <FontAwesomeIcon icon={faPlus} /> Añadir empresa
                 </button>
               </div>
 
@@ -190,7 +166,7 @@ const TablaClientes: React.FC = () => {
             <div className="table-responsive">
               <StyledDataTable
                 columns={columns}
-                data={filteredClientes}
+                data={filteredCompanies}
                 pagination
                 highlightOnHover
                 pointerOnHover
@@ -200,16 +176,16 @@ const TablaClientes: React.FC = () => {
           </div>
         </main>
       </div>
-      {showModalClientes && (
-        <FormClientes
-          show={showModalClientes}
+      {showModalCompany && (
+        <FormCompanies
+          show={showModalCompany}
           handleClose={handleCloseModalClientes}
-          clientData={selectedClient}
-          onSave={handleSaveClient}
+          companyData={selectedCompany}
+          onSave={handleSaveCompany}
         />
       )}
     </div>
   );
 };
 
-export default TablaClientes;
+export default TablaEmpresas;

@@ -9,7 +9,6 @@ import {
   faShoppingCart,
   faBoxes,
   faCalendarAlt,
-  faTag, // Icono para 'Precios'
   faCity, // Icono para 'Ciudades'
   faCog, // Icono para 'Equipo de Trabajo'
   faPuzzlePiece, // Icono para 'Productos Adicionales'
@@ -23,7 +22,7 @@ const HomePage: React.FC = () => {
     setIsSlideMenuExpanded(isExpanded);
   };
   const goToClientes = () => {
-    navigate("/clientes"); // Navega a la ruta de la tabla de clientes
+    navigate("/HomeClient"); // Navega a la ruta de la tabla de clientes
   };
 
   const goTored = () => {
@@ -42,9 +41,11 @@ const HomePage: React.FC = () => {
     navigate("/equipo"); // Navega a la ruta de la tabla de roll
   };
   const goToproductos = () => {
-    navigate("/TablaProductos"); // Navega a la ruta de la tabla de roll
+    navigate("/homeInventory"); // Navega a la ruta de la tabla de roll
   };
-
+  const goToCotizacion = () => {
+    navigate("/Cotizacion"); // Navega a la ruta de la tabla de roll
+  };
   return (
     <div className="homepage-container">
       <NavbarComponent />
@@ -85,7 +86,7 @@ const HomePage: React.FC = () => {
               <h3>Clientes</h3>
             </div>
 
-            <div className="card">
+            <div className="card" onClick={goToCotizacion}>
               <FontAwesomeIcon icon={faShoppingCart} className="card-icon" />
               <h3>Ventas</h3>
             </div>
@@ -93,10 +94,6 @@ const HomePage: React.FC = () => {
             <div className="card">
               <FontAwesomeIcon icon={faCalendarAlt} className="card-icon" />
               <h3>Eventos</h3>
-            </div>
-            <div className="card">
-              <FontAwesomeIcon icon={faTag} className="card-icon" />
-              <h3>Precios</h3>
             </div>
           </div>
         </main>

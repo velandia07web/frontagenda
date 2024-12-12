@@ -1,0 +1,180 @@
+.table-container {
+    position: relative;
+  }
+  
+  .containerAdds {
+    width: 80%;
+    margin: 0 auto; /* Centra el contenido */
+  }
+  
+  .table-responsive {
+    overflow-x: auto; /* Permite el desplazamiento horizontal si es necesario */
+    margin-bottom: 1rem;
+    margin-top: 20px;
+  }
+  
+  .data-table {
+    width: 100%;
+  }
+  
+  input.form-control.buscador {
+    margin-left: auto; /* Alinea el buscador al extremo derecho */
+    width: 250px;
+  }
+  
+  .form-control {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .mb-3 {
+    margin-bottom: 20px;
+  }
+  
+  .btn-primary {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #005b96;
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #003f6b;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-primary.regresar {
+    background-color: #007072;
+  }
+  
+  .btn-primary.regresar:hover {
+    background-color: #005b96;
+  }
+  
+  /* Estilos para la tabla */
+  .table-responsive .rdt_Table {
+    border: 1px solid #007072;
+    border-radius: 8px;
+    background-color: #ffffff;
+  }
+  
+  .rdt_TableHead {
+    background-color: #007072;
+    color: #ffffff;
+  }
+  
+  .rdt_TableHead .rdt_TableCol {
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+  }
+  
+  .rdt_TableBody .rdt_TableRow {
+    transition: background-color 0.3s ease;
+  }
+  
+  .rdt_TableBody .rdt_TableRow:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+  
+  .rdt_TableBody .rdt_TableRow:hover {
+    background-color: #e9ecef;
+  }
+  
+  .rdt_TableCol {
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .table-responsive .btn-link {
+    color: #007072;
+    font-size: 16px;
+    text-decoration: none;
+  }
+  
+  .table-responsive .btn-link:hover {
+    color: #005b96;
+  }
+  
+  /* Paginación */
+  .rdt_Pagination {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-top: 1px solid #cccccc;
+  }
+  
+  .rdt_Pagination button {
+    background-color: #005b96;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .rdt_Pagination button:hover {
+    background-color: #003f6b;
+  }
+  
+  /* Estilos para botones y buscador */
+  .botonesP {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  button.btn.btn-primary.crear {
+    padding: 7px 15px;
+  }
+  
+  .BuscadorP input {
+    border: 1px solid #005b96;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  
+  .BuscadorP input:focus {
+    border-color: #003f6b;
+    outline: none;
+  }
+  
+  @media (max-width: 768px) {
+    .containerAdds {
+      width: 95%;
+    }
+  
+    .botonesP {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  
+    input.form-control.buscador {
+      width: 100%;
+      margin-left: 0;
+    }
+  
+    .table-responsive {
+      margin-left: 0;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .data-table {
+      font-size: 0.9rem;
+    }
+  
+    .botonesP {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    input.form-control.buscador {
+      width: 100%;
+    }
+  }
+  

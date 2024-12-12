@@ -205,7 +205,7 @@ const TablaCiudad: React.FC = () => {
           handleClose={handleCloseModalCiudad}
           selectedCiudad={selectedCiudad}
           isEditing={isEditing}
-          onSubmit={handleModalSubmit} // Asegúrate de que la propiedad se llama onSubmit
+          onSubmit={handleModalSubmit} 
         />
       )}
     </div>

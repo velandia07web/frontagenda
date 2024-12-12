@@ -41,8 +41,33 @@ export const getAllZones = async (): Promise<Zone[]> => {
   }
 };
 
+export const getZoneWithProducts = async (): Promise<Zone[]> => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${port}/zone/zones-with-products`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener la zona");
+    }
+
+    const data = await response.json();
+    console.log(data)
+    return data.data;
+  } catch (error) {
+    console.error("Error en getZoneById:", error);
+    throw error;
+  }
+};
+
 // Función para obtener una zona específica por ID
-export const getZoneById = async (id: string): Promise<Zone> => {
+export const getZoneById = async (id: string): Promise<Zone[]> => {
   try {
     const token = localStorage.getItem("token"); // Obtén el token del localStorage
 
@@ -58,8 +83,8 @@ export const getZoneById = async (id: string): Promise<Zone> => {
       throw new Error("Error al obtener la zona");
     }
 
-    const data = await response.json();
-    return data; // Devuelve la zona encontrada
+    const data: ZonesResponse = await response.json();
+    return data.data.rows; 
   } catch (error) {
     console.error("Error en getZoneById:", error);
     throw error;
@@ -69,15 +94,15 @@ export const getZoneById = async (id: string): Promise<Zone> => {
 // Función para crear una nueva zona
 export const createZone = async (zone: Zone): Promise<Zone> => {
   try {
-    const token = localStorage.getItem("token"); // Obtén el token del localStorage
+    const token = localStorage.getItem("token"); 
 
     const response = await fetch(`${port}/zone/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Agrega el token en el header
+        Authorization: `Bearer ${token}`, 
       },
-      body: JSON.stringify(zone), // Serializa el objeto zone
+      body: JSON.stringify(zone), 
     });
 
     if (!response.ok) {
@@ -85,25 +110,24 @@ export const createZone = async (zone: Zone): Promise<Zone> => {
     }
 
     const data = await response.json();
-    return data; // Devuelve la zona creada
+    return data;
   } catch (error) {
     console.error("Error en createZone:", error);
     throw error;
   }
 };
 
-// Función para actualizar una zona existente
 export const updateZone = async (id: string, zone: Zone): Promise<Zone> => {
   try {
-    const token = localStorage.getItem("token"); // Obtén el token del localStorage
+    const token = localStorage.getItem("token");
 
     const response = await fetch(`${port}/zone/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Agrega el token en el header
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(zone), // Serializa el objeto zone
+      body: JSON.stringify(zone), 
     });
 
     if (!response.ok) {
@@ -111,17 +135,16 @@ export const updateZone = async (id: string, zone: Zone): Promise<Zone> => {
     }
 
     const data = await response.json();
-    return data; // Devuelve la zona actualizada
+    return data; 
   } catch (error) {
     console.error("Error en updateZone:", error);
     throw error;
   }
 };
 
-// Función para eliminar una zona
 export const deleteZone = async (id: string): Promise<void> => {
   try {
-    const token = localStorage.getItem("token"); // Obtén el token del localStorage
+    const token = localStorage.getItem("token"); 
 
     const response = await fetch(`${port}/zone/${id}`, {
       method: "DELETE",
