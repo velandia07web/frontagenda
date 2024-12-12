@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { TypePrices, getAllTypePrices } from "../../servicios/TypePrices";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate para la navegación
 import { QuotationsResume } from "../../servicios/quotations";
 import { sendEmail, inactiveQuotation } from "../../servicios/quotations";
 interface FormQuotationsProps {
@@ -15,11 +16,12 @@ const ResumeQuotations: React.FC<FormQuotationsProps> = ({
   quotation,
 }) => {
   const [typePrices, setTypePrices] = useState<TypePrices[]>([]);
+  const navigate = useNavigate(); // Hook para navegación
 
   const sendEmailHandler = (id: string) => {
     try {
       sendEmail(id); // La función importada
-      handleClose
+      navigate("/Cotizacion")
     } catch (error) {
       console.log(error);
     }
@@ -28,7 +30,7 @@ const ResumeQuotations: React.FC<FormQuotationsProps> = ({
   const inactiveQuotitationHandler = (id: string) => {
     try {
       inactiveQuotation(id)
-      handleClose
+      navigate("/Cotizacion")
     } catch (error) {
       console.log(error);
     }
