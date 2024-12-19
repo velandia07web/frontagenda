@@ -1,0 +1,39 @@
+
+.btnResume{
+    white-space: nowrap;
+}
+.botonesD {
+    display: flex;
+  }
+  .table-responsiveResume {
+    overflow-x: auto; /* Permite el desplazamiento horizontal si es necesario */
+    margin-bottom: 1rem;
+    margin-top: 20px;
+  }
+
+  /* Estilos para la tabla */
+  .table-responsiveResume .rdt_Table {
+    border: 1px solid #007072;
+    border-radius: 8px;
+    background-color: #ffffff;
+  }
+  
+  .table-responsiveResume .btn-link {
+    color: #007072;
+    font-size: 16px;
+    text-decoration: none;
+  }
+  
+  .table-responsiveResume .btn-link:hover {
+    color: #005b96;
+  }
+  
+
+  
+  @media (max-width: 768px) {
+    
+    .table-responsiveResume {
+      margin-left: 0;
+    }
+  }
+  

@@ -10,7 +10,7 @@ import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 //import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaCiudades.css";
@@ -64,11 +64,11 @@ const TablaCiudad: React.FC = () => {
 
   const handleDelete = async (ciudad: City) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar la ciudad ${ciudad.name}?`,
+      title: `¿Estás seguro de cambiar el estado de la ciudad ${ciudad.name}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -76,9 +76,10 @@ const TablaCiudad: React.FC = () => {
       try {
         await deleteCity(ciudad.id!); // Elimina utilizando el id que ahora es un string
         setCiudades((prev) => prev.filter((c) => c.id !== ciudad.id));
-        Swal.fire("Eliminado", `Ciudad ${ciudad.name} eliminada`, "success");
+        Swal.fire("Estado cambiado", `Ciudad ${ciudad.name} cambiada`, "success");
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar la ciudad", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado de la ciudad", "error");
       }
     }
   };
@@ -134,6 +135,20 @@ const TablaCiudad: React.FC = () => {
       sortable: true,
     },
     {
+      name: "Precio de transporte",
+      selector: (row: City) => row.transportPrice,
+      sortable: true,
+    },
+    {
+      name: "Estado",
+      cell: (row: City) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
+    {
       name: "Editar",
       cell: (row: City) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
@@ -143,10 +158,10 @@ const TablaCiudad: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: City) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,
@@ -159,13 +174,12 @@ const TablaCiudad: React.FC = () => {
       <div className="d-flex flex-grow-1 tablaClien">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
-          className={`content-area-table ${
-            isSlideMenuExpanded ? "expanded" : ""
-          }`}
+          className={`content-area-table ${isSlideMenuExpanded ? "expanded" : ""
+            }`}
         >
           <div className="containerCiudad">
             <h1 className="text-center titulo-tabla">Tabla de Ciudades</h1>{" "}
-            <div className="botonesC">
+            <div className="botones">
               {/* <button
                 className="btn btn-primary"
                 onClick={() => navigate("/home")}
@@ -205,7 +219,7 @@ const TablaCiudad: React.FC = () => {
           handleClose={handleCloseModalCiudad}
           selectedCiudad={selectedCiudad}
           isEditing={isEditing}
-          onSubmit={handleModalSubmit} 
+          onSubmit={handleModalSubmit}
         />
       )}
     </div>

@@ -12,7 +12,7 @@ import { getAllRoles, Role } from "../../servicios/rol"; // Servicios de roles
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaEquipo.css";
@@ -76,11 +76,11 @@ const TablaEquipo: React.FC = () => {
   // Maneja la eliminación de un usuario
   const handleDelete = async (user: User) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar al usuario ${user.name}?`,
+      title: `¿Estás seguro de cambiar el estado del usuario ${user.name}?`,
       text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -88,9 +88,10 @@ const TablaEquipo: React.FC = () => {
       try {
         await deleteUser(user.id!);
         setUsers((prev) => prev.filter((u) => u.id !== user.id));
-        Swal.fire("Eliminado", `Usuario ${user.name} eliminado`, "success");
+        Swal.fire("Estado cambiado", `Usuario ${user.name} cambiado`, "success");
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar el usuario", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado del usuario", "error");
       }
     }
   };
@@ -139,6 +140,15 @@ const TablaEquipo: React.FC = () => {
     { name: "Cedula", selector: (row: User) => row.cedula },
     { name: "Telefono", selector: (row: User) => row.phone },
     {
+      name: "Estado",
+      cell: (row: User) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
+    {
       name: "Rol",
       selector: (row: User) => {
         const role = roles.find((r) => r.id === String(row.idRol));
@@ -162,10 +172,10 @@ const TablaEquipo: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: User) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,
@@ -178,9 +188,8 @@ const TablaEquipo: React.FC = () => {
       <div className="d-flex flex-grow-1 tablaClien">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
-          className={`content-area-table ${
-            isSlideMenuExpanded ? "expanded" : ""
-          }`}
+          className={`content-area-table ${isSlideMenuExpanded ? "expanded" : ""
+            }`}
         >
           <div className="containerEquipo">
             <h1 className="text-center titulo-tabla">Tabla de Equipo</h1>{" "}

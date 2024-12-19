@@ -3,7 +3,7 @@ import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 //import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaRedSocial.css"; // Importa el archivo CSS
@@ -59,11 +59,11 @@ const TablaRed: React.FC = () => {
 
   const handleDelete = async (row: SocialMedia) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar la red ${row.name}?`,
+      title: `¿Estás seguro de cambiar el estado de ${row.name}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -73,9 +73,10 @@ const TablaRed: React.FC = () => {
         setSocialMedias((prev) =>
           prev.filter((socialMedia) => socialMedia.id !== row.id)
         );
-        Swal.fire("Eliminado", `Red social ${row.name} eliminada`, "success");
+        Swal.fire("Estado cambiado", `Red social ${row.name} cambiada`, "success");
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar la red social", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado de la red social", "error");
       }
     }
   };
@@ -115,10 +116,10 @@ const TablaRed: React.FC = () => {
 
   const filteredSocialMedias = Array.isArray(socialMedias)
     ? socialMedias.filter((socialMedia) =>
-        Object.values(socialMedia).some((value) =>
-          value.toString().toLowerCase().includes(search.toLowerCase())
-        )
+      Object.values(socialMedia).some((value) =>
+        value.toString().toLowerCase().includes(search.toLowerCase())
       )
+    )
     : [];
 
   const columns = [
@@ -126,6 +127,15 @@ const TablaRed: React.FC = () => {
       name: "Nombre",
       selector: (row: SocialMedia) => row.name,
       sortable: true,
+    },
+    {
+      name: "Estado",
+      cell: (row: SocialMedia) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
     },
     {
       name: "Editar",
@@ -137,13 +147,13 @@ const TablaRed: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: SocialMedia) => (
         <button
           className="btn btn-link eliminar"
           onClick={() => handleDelete(row)}
         >
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,
@@ -156,9 +166,8 @@ const TablaRed: React.FC = () => {
       <div className="d-flex flex-grow-1 tablaClien">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
-          className={`content-area-table ${
-            isSlideMenuExpanded ? "expanded" : ""
-          }`}
+          className={`content-area-table ${isSlideMenuExpanded ? "expanded" : ""
+            }`}
         >
           <div className="containerRed">
             <h1 className="text-center titulo-tabla">Tabla de Redes</h1>{" "}

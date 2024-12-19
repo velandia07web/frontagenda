@@ -33,6 +33,10 @@ const HomeInventory: React.FC = () => {
     navigate("/PreciosPorZona"); // Navega a la ruta de la tabla de roll
   };
 
+  const goToPricePack = () => {
+    navigate("/PreciosPorZonaPacks"); // Navega a la ruta de la tabla de roll
+  };
+
   return (
     <div className="homepage-container">
       <NavbarComponent />
@@ -44,24 +48,30 @@ const HomeInventory: React.FC = () => {
           <div className="dashboard-cards">
             <div className="card" onClick={goToInvetory}>
               <FontAwesomeIcon icon={faBoxes} className="card-icon" />
-              <h3>Productos principales</h3>
+              <h3>Cabinas</h3>
             </div>
 
             <div className="card" onClick={goToAdds}>
               <FontAwesomeIcon icon={faBoxes} className="card-icon" />
-              <h3>Productos adicionales</h3>
+              <h3>Adicionales</h3>
             </div>
 
             <div className="card" onClick={goToPacks}>
               <FontAwesomeIcon icon={faBoxes} className="card-icon" />
-              <h3>Paquetes definidos</h3>
+              <h3>Paquetes</h3>
             </div>
           </div>
           <div className="uniqueCard">
             <div className="card" onClick={goToPrice}>
               <FontAwesomeIcon icon={faTag} className="card-icon" />
-              <h3>Precios de horas por Zona</h3>
+              <h3>Precio de horas de cabinas por zona</h3>
+            </div><div className="card" onClick={goToPricePack}>
+              <FontAwesomeIcon icon={faTag} className="card-icon" />
+              <h3>Precio de horas de paquetes por zona</h3>
             </div>
+          </div>
+          <div className="uniqueCard">
+            
           </div>
         </main>
       </div>

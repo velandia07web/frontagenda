@@ -10,7 +10,7 @@ import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 //import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaProductos.css";
@@ -66,11 +66,11 @@ const TablaProductos: React.FC = () => {
 
   const handleDelete = async (producto: Product) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el producto ${producto.name}?`,
-      text: "Esta acción no se puede deshacer",
+      title: `¿Estás seguro de cambiar el estado del producto ${producto.name}?`,
+      text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -79,12 +79,13 @@ const TablaProductos: React.FC = () => {
         await deleteProduct(producto.id!);
         setProductos((prev) => prev.filter((p) => p.id !== producto.id));
         Swal.fire(
-          "Eliminado",
-          `Producto ${producto.name} eliminado`,
+          "Estado cambiado",
+          `Producto ${producto.name} cambiado`,
           "success"
         );
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar el producto", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado del producto", "error");
       }
     }
   };
@@ -141,6 +142,15 @@ const TablaProductos: React.FC = () => {
       sortable: true,
     },
     {
+      name: "Estado",
+      cell: (row: Product) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
+    {
       name: "Imagen",
       selector: (row: Product) => (
         <img
@@ -172,10 +182,10 @@ const TablaProductos: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: Product) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,
@@ -188,9 +198,8 @@ const TablaProductos: React.FC = () => {
       <div className="d-flex flex-grow-1 tablaProductos">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
-          className={`content-area-table ${
-            isSlideMenuExpanded ? "expanded" : ""
-          }`}
+          className={`content-area-table ${isSlideMenuExpanded ? "expanded" : ""
+            }`}
         >
           <div className="containerProductos">
             <h1 className="text-center titulo-tabla">Tabla de cabinas</h1>{" "}

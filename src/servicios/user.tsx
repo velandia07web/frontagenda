@@ -12,6 +12,7 @@ export interface User {
   idRol: string;
   idZone: string;
   active: boolean;
+  state?: string;
 }
 
 export interface CreateUserPayload extends User {

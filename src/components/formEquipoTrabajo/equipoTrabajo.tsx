@@ -95,13 +95,58 @@ const FormEquipoTrabajo: React.FC<FormEquipoProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isEditing && contraseña !== confirmarContraseña) {
-      setErrorContraseña(true);
-      setAlertMessage("Las contraseñas no coinciden.");
+    // Verificación de campos vacíos
+    if (!nombre || !apellido || !email || !cedula || !telefono || !rol || !zona) {
       setShowAlert(true);
+      setAlertMessage("Todos los campos son obligatorios.");
       return;
     }
 
+    // Verificación de contraseñas
+    if (!isEditing) {
+      if (contraseña !== confirmarContraseña) {
+        setErrorContraseña(true);
+        setAlertMessage("Las contraseñas no coinciden.");
+        setShowAlert(true);
+        return;
+      }
+
+      // Verificación de la longitud mínima de la contraseña
+      if (contraseña.length < 6) {
+        setErrorContraseña(true);
+        setAlertMessage("La contraseña debe tener al menos 6 caracteres.");
+        setShowAlert(true);
+        return;
+      }
+
+      // Verificación de la complejidad de la contraseña
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+      if (!passwordRegex.test(contraseña)) {
+        setErrorContraseña(true);
+        setAlertMessage(
+          "La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial."
+        );
+        setShowAlert(true);
+        return;
+      }
+    }
+
+    // Verificación de cédula (número de longitud esperada)
+    if (cedula && String(cedula).length !== 10) {
+      setShowAlert(true);
+      setAlertMessage("La cédula debe tener 10 dígitos.");
+      return;
+    }
+
+    // Verificación de email con expresión regular
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setShowAlert(true);
+      setAlertMessage("El email no es válido.");
+      return;
+    }
+
+    // Si todas las verificaciones son exitosas, enviamos los datos
     const userData = {
       name: nombre,
       lastName: apellido,

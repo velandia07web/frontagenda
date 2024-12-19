@@ -13,6 +13,7 @@ export interface Adds {
     id?: string;
     name: string;
     price: number;
+    state?: string;
     idTypePrice?: string;
 }
 

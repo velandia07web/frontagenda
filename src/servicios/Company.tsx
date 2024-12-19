@@ -8,11 +8,17 @@ export interface Company {
   phone: string;
   address: string; 
   website: string;
-  industry: string; 
+  industry: string;
+  cupo: number;
+  numberDocument: string;
   clientId?: string; 
+  idTypeDocument?: string;
+  typePayment: string;
+  idPaymentsDate?: string;
+  state?: string;
 }
 
-export interface CompanyResponse {
+interface CompanyResponse {
   status: number;
   message: string;
   data: {
@@ -57,6 +63,37 @@ export const getCompanyById = async (id: string): Promise<Company> => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener la compañía");
+    }
+
+    const data: Company = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error en getCompanyById: ", error);
+    throw error;
+  }
+};
+
+//Actualizar la compañia
+
+export const putCompany = async (id: string, company: Company): Promise<Company> => {
+  try {
+    const token = localStorage.getItem("token");
+
+
+    const cleanedData = cleanCompanyData(company)
+
+    const response = await fetch(`${port}/company/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(cleanedData),
+
     });
 
     if (!response.ok) {
@@ -142,4 +179,17 @@ export const deleteCompany = async (id: string): Promise<void> => {
     console.error("Error en deleteCompany: ", error);
     throw error;
   }
+};
+
+//Limpiar campos
+const cleanCompanyData = (company: Company): Partial<Company> => {
+  const cleanedData: Partial<Company> = {};
+  Object.keys(company).forEach((key) => {
+    const value = (company as any)[key];
+    // Solo incluir propiedades con valores válidos
+    if (value !== null && value !== "" && value !== 0) {
+      cleanedData[key as keyof Company] = value;
+    }
+  });
+  return cleanedData;
 };

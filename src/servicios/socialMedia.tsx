@@ -4,6 +4,7 @@ const port = import.meta.env.VITE_API_BASE_URL; // URL de tu API
 export interface SocialMedia {
   id?: string; // id opcional para la creación
   name: string;
+  state?: string;
 }
 
 // Interfaz para la respuesta de la API

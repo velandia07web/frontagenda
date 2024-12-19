@@ -1,14 +1,31 @@
 // components/NavbarComponent.jsx
 
 import React from "react";
+import { useEffect, useState } from "react";
 import { Container, Nav, Navbar, Dropdown, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getAllNotificationsbyUser, Notification } from "../../servicios/notifications";
 import { faBell, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import "./Navbar.css";
 import { logout } from "../../servicios/authService"; // Importar el servicio de logout
 
 const NavbarComponent: React.FC = () => {
-  const notificationCount = 3; // Ejemplo: número de notificaciones
+  const [notification, useNotification] = useState<Notification[]>([])
+  const notificationCount = notification.length; // Ejemplo: número de notificaciones
+
+  useEffect(() => {
+      const fetchZones = async () => {
+        try {
+          const userid = localStorage.getItem("userId")
+          const notiData = await getAllNotificationsbyUser(userid || "");
+          useNotification(notiData);
+        } catch (error) {
+          console.error("Error al obtener las zonas: ", error);
+        }
+      };
+  
+      fetchZones();
+    }, []);
 
   const handleLogout = async () => {
     const success = await logout();
@@ -49,13 +66,11 @@ const NavbarComponent: React.FC = () => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item href="#">Evento el martes</Dropdown.Item>
-                <Dropdown.Item href="#">
-                  Estos son los eventos que están en mora: 1234
+              {notification.map((noti) => (
+                <Dropdown.Item key={noti.id} href="#">
+                  {noti.description}
                 </Dropdown.Item>
-                <Dropdown.Item href="#">
-                  La venta 123 esta pendiente por pagar
-                </Dropdown.Item>
+              ))}
               </Dropdown.Menu>
             </Dropdown>
 

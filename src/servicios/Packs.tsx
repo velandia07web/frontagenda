@@ -4,6 +4,7 @@ export interface Packs {
   id?: string;
   name: string;
   description: string;
+  state?: string;
   idProduct?: string;
   idZone?: string;
 }
@@ -16,6 +17,7 @@ interface PacksResponse {
     rows: Packs[];
   };
 }
+
 
 // Función para obtener todos los Packs
 export const getAllPacks = async (): Promise<Packs[]> => {
@@ -41,6 +43,7 @@ export const getAllPacks = async (): Promise<Packs[]> => {
     throw error;
   }
 };
+
 
 // Función para obtener un Pack por su ID
 export const getPackById = async (id: string): Promise<Packs> => {

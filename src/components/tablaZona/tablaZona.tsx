@@ -10,7 +10,7 @@ import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 //import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaZona.css"; // Importa el archivo CSS
@@ -60,11 +60,11 @@ const TablaZona: React.FC = () => {
 
   const handleDelete = async (row: Zone) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar la zona ${row.name}?`,
+      title: `¿Estás seguro de cambiar el estado de ${row.name}?`,
       text: "Esta acción podría afectar otros procesos y usuarios",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -72,9 +72,10 @@ const TablaZona: React.FC = () => {
       try {
         await deleteZone(row.id!); // Asegúrate de que id no sea undefined
         setZonas((prev) => prev.filter((zona) => zona.id !== row.id));
-        Swal.fire("Eliminado", `Zona ${row.name} eliminada`, "success");
+        Swal.fire("Estado cambiado", `Zona ${row.name} cambiada`, "success");
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar la zona", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado de la zona", "error");
       }
     }
   };
@@ -107,14 +108,23 @@ const TablaZona: React.FC = () => {
 
   const filteredZona = Array.isArray(zonas)
     ? zonas.filter((zona) =>
-        Object.values(zona).some((value) =>
-          value.toString().toLowerCase().includes(search.toLowerCase())
-        )
+      Object.values(zona).some((value) =>
+        value.toString().toLowerCase().includes(search.toLowerCase())
       )
+    )
     : [];
 
   const columns = [
     { name: "Nombre", selector: (row: Zone) => row.name, sortable: true },
+    {
+      name: "Estado",
+      cell: (row: Zone) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
     {
       name: "Editar",
       cell: (row: Zone) => (
@@ -125,10 +135,10 @@ const TablaZona: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: Zone) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,
@@ -141,9 +151,8 @@ const TablaZona: React.FC = () => {
       <div className="d-flex flex-grow-1 tablaClien">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
-          className={`content-area-table ${
-            isSlideMenuExpanded ? "expanded" : ""
-          }`}
+          className={`content-area-table ${isSlideMenuExpanded ? "expanded" : ""
+            }`}
         >
           <div className="containerZ">
             <h1 className="text-center titulo-tabla">Tabla de zonas</h1>{" "}

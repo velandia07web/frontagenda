@@ -186,6 +186,24 @@ button.btn.btn-primary.crear {
   margin-left: 5px;
 }
 
+.state.active {
+  color: white;
+  background-color: green;
+  display: flex;
+  align-items: center;
+  border-radius: 25px;
+
+}
+.state.inactive {
+  color: white;
+  background-color: red;
+  display: flex;
+  align-items: center;
+  border-radius: 25px;
+}
+.state p{
+  margin: 5px;
+}
 /* button.btn.btn-link.eliminar {
   color: #bf0a0a;
 } */

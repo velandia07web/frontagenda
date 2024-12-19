@@ -14,11 +14,12 @@ export interface Client {
     charge: string;
     cupoDisponible: number;
     cupoCopado: number;
-    numberDocument: string;
-    idUser?: string; //
-    idSocialMedia?: string; //
-    idTypeDocument?: string;
-    idTypeClient?: string; //
+    idUser?: string; 
+    idSocialMedia?: string; 
+    idTypeClient?: string; 
+    state?: string;
+    typePayment: string;
+    idPaymentsDate?: string;
 }
 
 export interface clientFiltred{
@@ -153,14 +154,7 @@ export const createClient = async (client: Client): Promise<Client> => {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
 
-        console.log(client)
-
         client.idUser = userId || "";
-        console.log(client)
-        if(client.CC == ""){
-            client.CC = client.numberDocument
-        }
-        console.log(client)
 
         const response = await fetch(`${port}/client/`, {
             method: "POST",
@@ -187,9 +181,6 @@ export const createClient = async (client: Client): Promise<Client> => {
 export const updateClient = async (id: string, client: Client): Promise<Client> => {
     try {
         const token = localStorage.getItem("token");
-
-        console.log(id)
-        console.log(client)
 
         const response = await fetch(`${port}/client/${id}`, {
             method: "PUT",

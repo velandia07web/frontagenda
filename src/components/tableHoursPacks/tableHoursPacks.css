@@ -1,0 +1,10 @@
+
+  
+  .containerPrecios {
+    width: 80%;
+    margin: 0 auto; /* Centra el contenido */
+  }
+
+  .withoutSpace{
+    white-space: nowrap;
+  }

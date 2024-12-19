@@ -14,7 +14,7 @@ import { Product,
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaPacks.css";
@@ -69,11 +69,11 @@ const TablaPacks: React.FC = () => {
 
   const handleDelete = async (pack: Packs) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el pack ${pack.name}?`,
-      text: "Esta acción no se puede deshacer",
+      title: `¿Estás seguro de cambiar el estado del pack ${pack.name}?`,
+      text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -81,9 +81,10 @@ const TablaPacks: React.FC = () => {
       try {
         await deletePack(pack.id!);
         setPacks((prev) => prev.filter((p) => p.id !== pack.id));
-        Swal.fire("Eliminado", `Pack ${pack.name} eliminado`, "success");
+        Swal.fire("Estado cambiado", `Pack ${pack.name} cambiado`, "success");
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar el pack", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado del pack", "error");
       }
     }
   };
@@ -132,6 +133,15 @@ const TablaPacks: React.FC = () => {
       sortable: true,
     },
     {
+    name: "Estado",
+    cell: (row: Packs) => (
+      <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+        <p>{row.state}</p>
+      </div>
+    ),
+    ignoreRowClick: true,
+                   },
+    {
       name: "Cabina",
       selector: (row: Packs) => 
         products.find((product) => product.id === row.idProduct)?.name || "Sin zona",
@@ -153,10 +163,10 @@ const TablaPacks: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: Packs) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,

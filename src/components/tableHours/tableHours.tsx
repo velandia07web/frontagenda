@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getAllProductsWithPrice, productPrice, putProductPrice,deleteProductPrice } from "../../servicios/products";
+import { getAllProductsWithPrice, productPrice, putProductPrice } from "../../servicios/products";
 import { getAllProducts, Product } from "../../servicios/products";
 import { TypePrices, getAllTypePrices } from "../../servicios/TypePrices";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tableHours.css";
@@ -52,36 +52,8 @@ const TablaPrecios: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (product: productPrice) => {
-    const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el producto ${product.name}?`,
-      text: "Esta acción no se puede deshacer",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-  
-    if (result.isConfirmed) {
-      try {
-        // Eliminar el producto en el servidor
-        await deleteProductPrice(product.id || "");  // Asegúrate de pasar el id del producto
-  
-        // Actualizar el estado de los productos eliminando el producto
-        setProductsPrice((prev) => prev.filter((p) => p.id !== product.id));
-  
-        // Mostrar mensaje de éxito
-        Swal.fire("Eliminado", `Producto ${product.name} eliminado`, "success");
-      } catch (error) {
-        // En caso de error, mostrar mensaje de fallo
-        Swal.fire("Error", "No se pudo eliminar el producto", "error");
-      }
-    }
-  };
-  
-
   const findPriceTypeId = (typeName: string): string | null => {
-    const foundType = typePrices.find(type => 
+    const foundType = typePrices.find(type =>
       type.name.toLowerCase().includes(typeName.toLowerCase())
     );
     return foundType?.id ?? null;
@@ -97,18 +69,18 @@ const TablaPrecios: React.FC = () => {
   };
 
   const filteredProducts = productsPrice.filter((product) => {
-    const matchesProductName = 
+    const matchesProductName =
       product.name.toLowerCase().includes(selectedProductName.toLowerCase());
-    
-    const matchesSearch = 
+
+    const matchesSearch =
       Object.values(product).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
-    
-    const matchesPriceType = 
-      selectedPriceType === null || 
+
+    const matchesPriceType =
+      selectedPriceType === null ||
       (product.typePrice !== undefined && product.typePrice === selectedPriceType);
-    
+
     return matchesProductName && matchesSearch && matchesPriceType;
   });
 
@@ -154,15 +126,6 @@ const TablaPrecios: React.FC = () => {
       ),
       ignoreRowClick: true,
     },
-    {
-      name: "Eliminar",
-      cell: (row: productPrice) => (
-        <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
   ];
 
   return (
@@ -190,20 +153,20 @@ const TablaPrecios: React.FC = () => {
                 ))}
               </select>
 
-              <button 
-                className={`btn ${selectedPriceType === findPriceTypeId('descuento') ? 'btn-success' : 'btn-primary'} withoutSpace`}
-                onClick={() => handlePriceTypeFilter('descuento')}
+              <button
+                className={`btn ${selectedPriceType === findPriceTypeId('Evento empresarial') ? 'btn-success' : 'btn-primary'} withoutSpace`}
+                onClick={() => handlePriceTypeFilter('Evento empresarial')}
               >
-                Precio con descuento
+                Evento empresarial
               </button>
-              <button 
-                className={`btn ${selectedPriceType === findPriceTypeId('público') ? 'btn-success' : 'btn-primary'} withoutSpace`}
-                onClick={() => handlePriceTypeFilter('público')}
+              <button
+                className={`btn ${selectedPriceType === findPriceTypeId('Evento Social') ? 'btn-success' : 'btn-primary'} withoutSpace`}
+                onClick={() => handlePriceTypeFilter('Evento Social')}
               >
-                Precio público
+                Evento Social
               </button>
               {selectedPriceType && (
-                <button 
+                <button
                   className="btn btn-secondary withoutSpace ml-2"
                   onClick={handleResetPriceTypeFilter}
                 >
@@ -243,7 +206,7 @@ const TablaPrecios: React.FC = () => {
         onSubmit={async (price: number, priceDeadHour: number) => {
           if (selectedProduct) {
             try {
-              
+
               // Actualiza el estado de productos precios
               setProductsPrice(prev => prev.map(p => p.id === selectedProduct.id ? { ...p, price, priceDeadHour } : p));
               // Llamada al servicio putProductPrice para actualizar el precio

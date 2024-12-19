@@ -4,6 +4,7 @@ const port = import.meta.env.VITE_API_BASE_URL; // URL de tu API
 export interface Zone {
   id: string; // id opcional para la creación
   name: string;
+  state?: string;
 }
 
 // Interfaz para la respuesta de la API
@@ -39,7 +40,32 @@ export const getAllZones = async (): Promise<Zone[]> => {
     console.error("Error en getAllZones:", error);
     throw error; // Maneja el error según tus necesidades
   }
-};
+}
+
+export const getZoneWithPacks = async (): Promise<Zone[]> => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${port}/zone/zones-with-packs`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener la zona");
+    }
+
+    const data = await response.json();
+    console.log(data)
+    return data.data;
+  } catch (error) {
+    console.error("Error en getZoneById:", error);
+    throw error;
+  }
+};;
 
 export const getZoneWithProducts = async (): Promise<Zone[]> => {
   try {

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
   faEdit,
-  faTrash,
+  faPowerOff,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
@@ -16,6 +16,7 @@ import FormClientes from "../formClientes/formClientes";
 import Swal, { SweetAlertResult } from "sweetalert2"; // Importa sweetalert2 y el tipo SweetAlertResult
 import styled from "styled-components";
 import { Client, getAllClients, deleteClient } from "../../servicios/clients";
+import { getAllCompanies, Company } from "../../servicios/Company";
 
 const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
   // Aquí van tus estilos personalizados
@@ -26,7 +27,8 @@ const TablaClientes: React.FC = () => {
   const [search, setSearch] = useState("");
   const [showModalClientes, setShowModalClientes] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | undefined>();
-  const [clientList, setClientList] = useState<Array<Client>>(); // Lista dinámica de clientes
+  const [clientList, setClientList] = useState<Array<Client>>();
+  const [companies, setCompanies] = useState<Array<Company>>([]);
   const navigate = useNavigate();
 
   const handleToggleMenu = (isExpanded: boolean) => setIsSlideMenuExpanded(isExpanded);
@@ -46,23 +48,30 @@ const TablaClientes: React.FC = () => {
     console.log('Saving client:', newClient);
   
     if (newClient.id) {
-      // Update existing client
       setClientList((prevClients) => {
         if (!prevClients) return [newClient];
-        
         const updatedClients = prevClients.map((client) => 
           client.id === newClient.id ? newClient : client
         );
-        
-        console.log('Updated client list:', updatedClients);
         return updatedClients;
       });
+      Swal.fire({
+        title: "Éxito",
+        text: `Cliente ${newClient.name} actualizado correctamente`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } else {
-      // Add new client
       setClientList((prevClients) => {
         const newClientList = [...(prevClients || []), newClient];
         console.log('New client list:', newClientList);
         return newClientList;
+      });
+      Swal.fire({
+        title: "Éxito",
+        text: `Cliente ${newClient.name} creado correctamente`,
+        icon: "success",
+        confirmButtonText: "OK",
       });
     }
   };
@@ -71,8 +80,10 @@ const TablaClientes: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const clientsData = await getAllClients()
-        setClientList(clientsData)
+        const companiesData = await getAllCompanies();
+        const clientsData = await getAllClients();
+        setClientList(clientsData);
+        setCompanies(companiesData);
       } catch (error) {
         console.error("Error al obtener todos los clientes; ", error)
       }
@@ -83,11 +94,11 @@ const TablaClientes: React.FC = () => {
 
   const handleDelete = (row: Client) => {
     Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar a ${row.name}?`,
-      text: "Esta acción no se puede deshacer.",
+      title: `¿Estás seguro de cambiar el estado de ${row.name}?`,
+      text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     }).then(async (result: SweetAlertResult) => {
       if (result.isConfirmed) {
@@ -97,19 +108,19 @@ const TablaClientes: React.FC = () => {
   
           // Mostrar el mensaje de éxito
           Swal.fire({
-            title: "Eliminado",
-            text: `Cliente ${row.name} eliminado`,
+            title: "Estado cambiado",
+            text: `Cliente ${row.name} cambiado`,
             icon: "success",
             confirmButtonText: "OK",
           });
-  
+          window.location.reload()
           // Actualizar la lista de clientes (eliminando al cliente localmente)
           setClientList(clientList?.filter((client) => client.id !== row.id));
         } catch (error) {
           // Manejo de errores si la eliminación falla
           Swal.fire({
             title: "Error",
-            text: "No se pudo eliminar el cliente.",
+            text: "No se pudo cambiar el estado del cliente.",
             icon: "error",
             confirmButtonText: "OK",
           });
@@ -129,7 +140,23 @@ const TablaClientes: React.FC = () => {
   const columns = [
     { name: "Nombre", selector: (row: Client) => row.name, sortable: true },
     { name: "Apellido", selector: (row: Client) => row.lastName, sortable: true },
-    { name: "Compañia", selector: (row: Client) => row.idCompany, sortable: true },
+    {
+      name: "Compañía",
+      selector: (row: Client) => {
+        const company = companies.find((c) => c.id === row.idCompany);
+        return company ? company.name : "Sin compañía";
+      },
+      sortable: true,
+    },
+    {
+      name: "Estado",
+      cell: (row: Client) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
     { name: "Correo", selector: (row: Client) => row.email, sortable: true },
     { name: "Documento de la persona a cargo", selector: (row: Client) => row.CC, sortable: true },
     { name: "Cupo", selector: (row: Client) => row.cupoDisponible, sortable: true },
@@ -144,10 +171,10 @@ const TablaClientes: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: Client) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,

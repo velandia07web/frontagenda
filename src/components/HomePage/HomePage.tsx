@@ -43,8 +43,11 @@ const HomePage: React.FC = () => {
   const goToproductos = () => {
     navigate("/homeInventory"); // Navega a la ruta de la tabla de roll
   };
-  const goToCotizacion = () => {
-    navigate("/Cotizacion"); // Navega a la ruta de la tabla de roll
+  const goToHomeSells = () => {
+    navigate("/HomeSells"); // Navega a la ruta de la tabla de roll
+  };
+  const goToEvents= () => {
+    navigate("/Eventos"); // Navega a la ruta de la tabla de roll
   };
   return (
     <div className="homepage-container">
@@ -86,12 +89,12 @@ const HomePage: React.FC = () => {
               <h3>Clientes</h3>
             </div>
 
-            <div className="card" onClick={goToCotizacion}>
+            <div className="card" onClick={goToHomeSells}>
               <FontAwesomeIcon icon={faShoppingCart} className="card-icon" />
               <h3>Ventas</h3>
             </div>
 
-            <div className="card">
+            <div className="card" onClick={goToEvents}>
               <FontAwesomeIcon icon={faCalendarAlt} className="card-icon" />
               <h3>Eventos</h3>
             </div>

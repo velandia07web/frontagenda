@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { getAllTypeDocuments, TypeDocument } from "../../servicios/TypeDocuments";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Company } from "../../servicios/Company";
+import { PaymentDates, getAllPaymentDates } from "../../servicios/PaymentsDates";
 
 interface FormCompaniesProps {
   show: boolean;
@@ -11,6 +13,8 @@ interface FormCompaniesProps {
 }
 
 const FormCompanies: React.FC<FormCompaniesProps> = ({ show, handleClose, companyData, onSave }) => {
+  const [TypeDocuments, setTypeDocuments] = useState<Array<TypeDocument>>([])
+  const [PaymentsDate, setPaymentsDate] = useState<Array<PaymentDates>>([])
   const [formData, setFormData] = useState<Company>({
     name: "",
     legalName: "",
@@ -19,11 +23,27 @@ const FormCompanies: React.FC<FormCompaniesProps> = ({ show, handleClose, compan
     address: "",
     website: "",
     industry: "",
+    cupo: 0,
+    numberDocument: "",
+    idTypeDocument: "",
+    typePayment: "",
+    idPaymentsDate: ""
   });
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const TypeDocumentData = await getAllTypeDocuments()
+        const PaymentsDateData = await getAllPaymentDates()
+        setPaymentsDate(PaymentsDateData)
+        setTypeDocuments(TypeDocumentData)
+      } catch (error) {
+        console.error("Error al obtener los datos: ", error);
+      }
+    }
+
+    fetchData()
     if (companyData) {
-      // Si recibimos datos de la empresa, los colocamos en el formulario para editar
       setFormData(companyData);
     } else {
       resetForm(); // Si no hay empresa, limpiamos el formulario
@@ -39,6 +59,11 @@ const FormCompanies: React.FC<FormCompaniesProps> = ({ show, handleClose, compan
       address: "",
       website: "",
       industry: "",
+      cupo: 0,
+      numberDocument: "",
+      idTypeDocument: "",
+      typePayment: "",
+      idPaymentsDate: "",
     });
   };
 
@@ -46,26 +71,21 @@ const FormCompanies: React.FC<FormCompaniesProps> = ({ show, handleClose, compan
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    console.log(name, value)
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      ...(name === "typePayment" && value !== "Cuotas" ? { cupoDisponible: 0 } : {}),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (formData.id) {
-        // Si hay un ID, actualizamos (PUT)
-        // Aquí deberías integrar tu lógica para actualizar la empresa en el backend
-        alert("Empresa actualizada correctamente");
-      } else {
-        // Si no hay ID, creamos (POST)
-        // Aquí deberías integrar tu lógica para crear una nueva empresa en el backend
-        alert("Empresa creada correctamente");
-      }
       onSave(formData); // Pasa 'formData' para refrescar la lista de empresas
       handleClose(); // Cierra el modal
       resetForm(); // Limpia el formulario
     } catch (error) {
-      console.error("Error al guardar la empresa:", error);
       alert("Ocurrió un error al guardar la empresa.");
     }
   };
@@ -97,6 +117,36 @@ const FormCompanies: React.FC<FormCompaniesProps> = ({ show, handleClose, compan
               value={formData.legalName}
               onChange={handleChange}
               placeholder="Ingrese la razón social"
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formTypeDocument">
+            <Form.Label>Tipo de documento</Form.Label>
+            <Form.Control
+              as="select"
+              name="idTypeDocument"
+              value={formData.idTypeDocument}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccionar Ciudad</option>
+              {TypeDocuments.map((document) => (
+                <option key={document.id} value={document.id}>
+                  {document.name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group controlId="formNumberDocument">
+            <Form.Label>Número de documento</Form.Label>
+            <Form.Control
+              type="text"
+              name="numberDocument"
+              value={formData.numberDocument}
+              onChange={handleChange}
+              placeholder="Ingrese el número de documento"
               required
             />
           </Form.Group>
@@ -159,6 +209,59 @@ const FormCompanies: React.FC<FormCompaniesProps> = ({ show, handleClose, compan
               required
             />
           </Form.Group>
+
+          <Form.Group controlId="formTypePayment">
+            <Form.Label>Tipo de pago</Form.Label>
+            <Form.Control
+              as="select"
+              name="typePayment"
+              value={formData.typePayment}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Tipo de pago</option>
+              <option key={"Contado"} value={"Contado"}>
+                Contado
+              </option>
+              <option key={"Cuotas"} value={"Cuotas"}>
+                Cuotas
+              </option>
+            </Form.Control>
+          </Form.Group>
+          {formData.typePayment === "Cuotas" && (
+
+
+            <Form.Group controlId="formCupoDisponible">
+              <Form.Label>Cupo disponible</Form.Label>
+              <Form.Control
+                type="number"
+                name="cupo"
+                value={formData.cupo}
+                onChange={handleChange}
+                placeholder="Ingrese el cupo disponible"
+              />
+            </Form.Group>
+          )}
+          {/* Mostrar campo de idPaymentsDate solo si se selecciona "Cuotas" */}
+          {formData.typePayment === "Cuotas" && (
+            <Form.Group controlId="formPaymentsDate">
+              <Form.Label>Fecha de pago</Form.Label>
+              <Form.Control
+                as="select"
+                name="idPaymentsDate"
+                value={formData.idPaymentsDate}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Seleccionar Fecha de Pago</option>
+                {PaymentsDate.map((payment) => (
+                  <option key={payment.id} value={payment.id}>
+                    {payment.numberDays + "Días"}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+          )}
 
           <div className="d-flex justify-content-center mt-4">
             <Button variant="primary" type="submit">

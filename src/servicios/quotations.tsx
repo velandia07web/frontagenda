@@ -1,27 +1,40 @@
 const port = import.meta.env.VITE_API_BASE_URL; // URL de tu API
 
-
 export interface EventProduct {
-    id?: string;
-    hours: number;
+    nameProduct: string;
+    id: string;
+    hour: string;
+    price: number;
+    numberHour: number;
     days: number;
+    quantityPriceDeadHour: number;
+    priceDeadHour: number;
     quantity: number;
 }
 
 export interface EventAdd {
     id?: string;
+    nameAdd: string;
     quantity: number;
+    price: number;
 }
 
 export interface EventPack {
     id: string;
+    namePack: string;
+    price: number;
+    quantity: number;
 }
 
 export interface Event {
     id?: string;
     name: string;
     cityId: string;
-    dateEvent: string;
+    dateStart: string;
+    dateEnd: string;
+    days: number;
+    total: number;
+    transportPrice: number;
     packs: EventPack[];
     products: EventProduct[];
     adds: EventAdd[];
@@ -29,9 +42,12 @@ export interface Event {
 
 export interface Quotations {
     id?: string;
-    reference: string;
+    reference?: string;
     clientId: string;
     discount: number;
+    IVA: number;
+    totalNeto: number;
+    subTotal: number;
     typePricesId: string;
     telephone: string;
     SocialMediasId: string;
@@ -42,24 +58,36 @@ export interface Quotations {
 
 export interface QuotationsResume {
     id?: string;
+    reference?: string;
+    clientId: string;
+    telephone: string;
+    email: string;
+    state?: string;
+    subtotal?: number;
+    IVA?: number;
+    discount: number;
+    totalNet?: number;
+    etapa?: string;
+    userId?: string;
+    typePricesId: string;
+    SocialMediasId: string;
+    events: Event[];
+}
+export interface response {
+    id: string;
     reference: string;
     clientId: string;
     discount: number;
+    IVA: number;
+    totalNet: number;
+    subtotal: number;
     typePricesId: string;
     telephone: string;
     SocialMediasId: string;
     email: string;
-    userId?: string;
-    subtotal?: number;
-    IVA?: number;
-    state?: string;
-    totalNet?: number;
-    events: Event[];
-}
-interface QuotationsResumeResponse {
-    status: number;
-    message: string;
-    data: QuotationsResume;
+    userId: string;
+    state: string; 
+    etapa: string; 
 }
 
 interface QuotationsResumeResponseWithArray {
@@ -67,13 +95,11 @@ interface QuotationsResumeResponseWithArray {
     message: string;
     data: QuotationsResume[];
 }
+
 interface QuotationsResponse {
     status: number;
     message: string;
-    data: {
-        count: number;
-        rows: Quotations[];
-    }
+    data: response;
 }
 
 
@@ -154,8 +180,8 @@ export const inactiveQuotation = async (id: string): Promise <Quotations> => {
     try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch(`${port}/${id}/inactivate`, {
-            method: "PATCH",
+        const response = await fetch(`${port}/quotation/${id}`, {
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -174,7 +200,7 @@ export const inactiveQuotation = async (id: string): Promise <Quotations> => {
     }
 }
 
-export const createQuotation = async (quotation: Quotations): Promise<Quotations> => {
+export const createQuotation = async (quotation: Quotations): Promise<response> => {
     try {
         const token = localStorage.getItem("token")
         const userId = localStorage.getItem("userId")
@@ -193,7 +219,7 @@ export const createQuotation = async (quotation: Quotations): Promise<Quotations
             throw new Error("Error al crear una cotización")
         }
 
-        const data: QuotationsResumeResponse = await response.json();
+        const data: QuotationsResponse = await response.json();
         return data.data;
     } catch (error) {
         console.error("Error en createQuotation:", error);

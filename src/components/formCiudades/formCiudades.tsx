@@ -24,6 +24,7 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
     id: "",
     name: "",
     idZone: "",
+    transportPrice: 0,
   });
 
   const [zonas, setZonas] = useState<Zone[]>([]);
@@ -43,7 +44,7 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
     if (selectedCiudad) {
       setCiudadData(selectedCiudad);
     } else {
-      setCiudadData({ id: "", name: "", idZone: "" });
+      setCiudadData({ id: "", name: "", idZone: "", transportPrice: 0 });
     }
   }, [selectedCiudad]);
 
@@ -82,6 +83,21 @@ const FormCiudad: React.FC<FormCiudadProps> = ({
               placeholder="Ingrese el nombre de la ciudad"
               name="name"
               value={ciudadData.name}
+              onChange={handleChange}
+              className="custom-input"
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formTransportPrice" className="mb-4">
+            <Form.Label className="form-label-custom">
+              Costo de transporte
+            </Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese el nombre de la ciudad"
+              name="transportPrice"
+              value={ciudadData.transportPrice}
               onChange={handleChange}
               className="custom-input"
               required

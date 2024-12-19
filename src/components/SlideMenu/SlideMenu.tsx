@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
-  faFileAlt,
   faCalendarAlt,
   faUsers,
   faChevronDown,
@@ -12,7 +11,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./SlideMenu.css";
 //import FormEquipo from "../formEquipoTrabajo/equipoTrabajo";
-import FormClientes from "../formClientes/formClientes";
 //import FormCiudad from "../formCiudades/formCiudades";
 import FormInventario from "../formInventario/formInventario";
 //import FormRoll from "../formRoll/formRoll";
@@ -39,7 +37,6 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   /* const [showModalRed, setShowModalRed] = useState(false); */
   /*  const [showModalZona, setShowModalZona] = useState(false); */
   /* const [showModalCiudad, setShowModalCiudad] = useState(false); */
-  const [showModalClientes, setShowModalClientes] = useState(false);
   const [showModalInventario, setShowModalInventario] = useState(false);
 
   const toggleMenu = () => {
@@ -71,6 +68,9 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
   /* const handleNavigateToTablaRoll = () => {
     navigate("/roll"); // Redirige a la vista de Tabla
   }; */
+  const handleNavigateTohome = () => {
+    navigate("/home"); // Redirige a la vista de Tabla
+  };
 
   const handleNavigateToTablaequipo = () => {
     navigate("/equipo"); // Redirige a la vista de Tabla
@@ -94,6 +94,27 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
 
   const handleNavigateToTablaProductos = () => {
     navigate("/TablaProductos"); // Redirige a la vista de Tabla
+  };
+
+  const handleNavigateTohomeInventory = () => {
+    navigate("/homeInventory"); // Redirige a la vista de Tabla
+  };
+  const handleNavigateToTablaPacks = () => {
+    navigate("/TablaPacks"); // Redirige a la vista de Tabla
+  }; const handleNavigateToTablaAdds = () => {
+    navigate("/TablaAdds"); // Redirige a la vista de Tabla
+  };
+  const handleNavigateToTablaCotizaciones = () => {
+    navigate("/cotizaciones"); // Redirige a la vista de Tabla
+  };
+  const handleNavigateToHomeClient = () => {
+    navigate("/HomeClient"); // Redirige a la vista de Tabla
+  }; const handleNavigateToHomeSells = () => {
+    navigate("/HomeSells"); // Redirige a la vista de Tabla
+  }; const handleNavigateToTablaEventos = () => {
+    navigate("/Eventos"); // Redirige a la vista de Tabla
+  }; const handleNavigateToDias_de_pago = () => {
+    navigate("/Dias_de_pago"); // Redirige a la vista de Tabla
   };
 
   /* // logica para recibir datos al modal
@@ -189,17 +210,13 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
     setSelectedCiudad(null); // Resetea el rol seleccionado
   }; */
 
-  const handleOpenModalClientes = () => setShowModalClientes(true);
-  const handleCloseModalClientes = () => setShowModalClientes(false);
-  const handleOpenModalInventario = () => setShowModalInventario(true);
   const handleCloseModalInventario = () => setShowModalInventario(false);
 
   return (
     <>
       <div
-        className={`slide-menu-container ${
-          isExpanded ? "expanded" : "collapsed"
-        }`}
+        className={`slide-menu-container ${isExpanded ? "expanded" : "collapsed"
+          }`}
         style={
           {
             "--slide-menu-width": isExpanded ? "250px" : "60px",
@@ -213,62 +230,13 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
         </div>
 
         <div
-          className={`slide-menu ${
-            isExpanded || isHovered ? "expanded" : "collapsed"
-          }`}
+          className={`slide-menu ${isExpanded || isHovered ? "expanded" : "collapsed"
+            }`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <ul className="menu-items">
             <li>
-              <div
-                onClick={() => toggleSubMenu("formularios")}
-                className="menu-item"
-              >
-                <FontAwesomeIcon icon={faFileAlt} />
-                {(isExpanded || isHovered) && (
-                  <>
-                    <span> Formularios</span>
-                    <FontAwesomeIcon
-                      icon={
-                        isSubMenuOpen.formularios ? faChevronUp : faChevronDown
-                      }
-                      className="chevron-icon"
-                    />
-                  </>
-                )}
-              </div>
-              {isSubMenuOpen.formularios && (isExpanded || isHovered) && (
-                <ul className="submenu">
-                  {/* <li onClick={handleOpenCreateRollModal}>
-                    <FontAwesomeIcon icon={faMinus} /> Crear Roll
-                  </li> */}
-
-                  {/*  <li onClick={handleOpenCreateRedModal}>
-                    <FontAwesomeIcon icon={faMinus} /> Crear Red De Conexion
-                  </li> */}
-
-                  {/* <li onClick={handleOpenCreateZonaModal}>
-                    <FontAwesomeIcon icon={faMinus} /> Crear Zona
-                  </li> */}
-
-                  {/*  <li onClick={handleOpenCreateCiudadModal}>
-                    <FontAwesomeIcon icon={faMinus} /> Ciudades
-                  </li> */}
-
-                  {/* <li onClick={handleOpenCreateequipoModal}>
-                    <FontAwesomeIcon icon={faMinus} /> Equipo de Trabajo
-                  </li> */}
-
-                  <li onClick={handleOpenModalClientes}>
-                    <FontAwesomeIcon icon={faMinus} /> Clientes
-                  </li>
-
-                  <li onClick={handleOpenModalInventario}>
-                    <FontAwesomeIcon icon={faMinus} /> Inventario
-                  </li>
-                </ul>
-              )}
             </li>
 
             <li>
@@ -289,11 +257,19 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
               </div>
               {isSubMenuOpen.agenda && (isExpanded || isHovered) && (
                 <ul className="submenu">
-                  <li>
+                  <li onClick={handleNavigateTohome}>
                     <FontAwesomeIcon icon={faMinus} />
-                    <span>Ventas</span>
+                    <span>Incio del aplicativo</span>
                   </li>
-                  <li>
+                  <li onClick={handleNavigateToHomeSells}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Inicio de ventas</span>
+                  </li>
+                  <li onClick={handleNavigateToTablaCotizaciones}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Cotizaciones</span>
+                  </li>
+                  <li onClick={handleNavigateToTablaEventos}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Eventos</span>
                   </li>
@@ -356,10 +332,31 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
                     <span>Clientes</span>
                   </li>
 
-                  <li>
+                  <li onClick={handleNavigateToTablaAdds}>
                     <FontAwesomeIcon icon={faMinus} />
                     <span>Productos adicionales</span>
                   </li>
+
+                  <li onClick={handleNavigateToTablaPacks}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Paquetes</span>
+                  </li>
+                  <li onClick={handleNavigateTohomeInventory}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Inicio de inventario</span>
+                  </li>
+                 
+                  
+                  <li onClick={handleNavigateToHomeClient}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Inicio de clientes</span>
+                  </li>
+                  
+                  <li onClick={handleNavigateToDias_de_pago}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>Tabla de días de pago</span>
+                  </li>
+
                 </ul>
               )}
             </li>
@@ -412,13 +409,6 @@ const SlideMenu: React.FC<SlideMenuProps> = ({ onToggleMenu }) => {
           isEditing={isEditingCiudad} // Pasa si estamos editando o creando
         />
       )} */}
-
-      {showModalClientes && (
-        <FormClientes
-          show={showModalClientes}
-          handleClose={handleCloseModalClientes}
-        />
-      )}
 
       {showModalInventario && (
         <FormInventario

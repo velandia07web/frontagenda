@@ -135,7 +135,13 @@
   list-style: none;
   padding: 0;
   cursor: pointer;
+  max-height: 300px; /* Ajusta la altura máxima según sea necesario */
+  overflow-y: auto; /* Habilita el desplazamiento vertical */
+  scrollbar-width: thin; /* (Opcional) Personaliza el ancho del scrollbar para navegadores compatibles */
+  scrollbar-color: #888 #f1f1f1; /* (Opcional) Colores del scrollbar */
 }
+
+
 
 .submenu li {
   display: flex;

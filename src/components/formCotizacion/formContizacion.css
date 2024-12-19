@@ -1,0 +1,42 @@
+
+  .table-responsiveFormCotizacion {
+    overflow: auto; /* Asegura que la tabla sea desplazable si es necesario */
+    margin-bottom: 1rem; /* Espacio en la parte inferior de la tabla */
+  }
+  
+  
+  @media (max-width: 600px) {
+
+    .table-responsiveFormCotizacion {
+      overflow: auto; /* Asegura que la tabla sea desplazable si es necesario */
+      margin-bottom: 1rem; /* Espacio en la parte inferior de la tabla */
+      margin-left: 0%;
+      width: 90%;
+      table-layout: auto;
+    }
+  
+ 
+  }
+  .table-responsiveFormCotizacion {
+    margin-top: 20px;
+  }
+  
+ 
+  /* Estilos generales para la tabla */
+  .table-responsiveFormCotizacion .rdt_Table {
+    border: 1px solid #007072;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #007072;
+  }
+  
+  .table-responsiveFormCotizacion .btn-link {
+    color: #007072;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .table-responsiveFormCotizacion .btn-link:hover {
+    color: #cacece;
+  }
+  

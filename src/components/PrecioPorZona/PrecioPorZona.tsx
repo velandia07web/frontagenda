@@ -37,7 +37,7 @@ const TablaPreciosPorZona: React.FC = () => {
         <main
           className={`content-area ${isSlideMenuExpanded ? "expanded" : ""}`}
         >
-          <h1 className="text-center titulo-tabla">Zonas parametrizadas</h1>
+          <h1 className="text-center titulo-tabla">Zonas parametrizadas con cabinas</h1>
           <div className="dashboard-cardsPrices" >
             {Array.isArray(zones) && zones.length > 0 ? (
               zones.map((zone) => (

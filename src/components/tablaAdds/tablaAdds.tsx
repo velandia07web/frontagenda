@@ -4,7 +4,7 @@ import { TypePrices, getAllTypePrices } from "../../servicios/TypePrices";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaAdds.css";
@@ -53,11 +53,11 @@ const TablaAdds: React.FC = () => {
 
   const handleDelete = async (add: Adds) => {
     const result = await Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar el adicional ${add.name}?`,
-      text: "Esta acción no se puede deshacer",
+      title: `¿Estás seguro de cambiar el estado del adicional ${add.name}?`,
+      text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     });
 
@@ -65,9 +65,10 @@ const TablaAdds: React.FC = () => {
       try {
         await deleteAdd(add.id!);
         setAdds((prev) => prev.filter((a) => a.id !== add.id));
-        Swal.fire("Eliminado", `Adicional ${add.name} eliminado`, "success");
+        Swal.fire("Estado cambiado", `Adicional ${add.name} cambiado`, "success");
+        window.location.reload()
       } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar el adicional", "error");
+        Swal.fire("Error", "No se pudo cambiar el estado del adicional", "error");
       }
     }
   };
@@ -115,6 +116,15 @@ const TablaAdds: React.FC = () => {
       sortable: true,
     },
     {
+      name: "Estado",
+      cell: (row: Adds) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
+    {
       name: "Editar",
       cell: (row: Adds) => (
         <button className="btn btn-link" onClick={() => handleEdit(row)}>
@@ -124,10 +134,10 @@ const TablaAdds: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: Adds) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,
@@ -144,7 +154,7 @@ const TablaAdds: React.FC = () => {
         >
           <div className="containerAdds">
             <h1 className="text-center titulo-tabla">Tabla de Adicionales</h1>
-            <div className="botonesP">
+            <div className="botonesC">
               <button onClick={handleCreate} className="btn btn-primary crear">
                 <h6>Crear Nuevo</h6>
               </button>

@@ -5,6 +5,8 @@ export interface City {
   id: string; // Cambiar a string ya que el id parece ser un UUID
   name: string;
   idZone: string; // idZone puede ser opcional// Cambiar a idZone en lugar de zone
+  transportPrice: number;
+  state?: string;
 }
 
 // Interfaz para la respuesta de la API

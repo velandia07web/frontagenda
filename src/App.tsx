@@ -24,7 +24,12 @@ import HomeClient from "./components/HomeClients/HomeClient";
 import TablaEmpresas from "./components/tablaEmpresas/tablaEmpresas";
 import TablaPreciosPorZona from "./components/PrecioPorZona/PrecioPorZona";
 import TablaPrecios from "./components/tableHours/tableHours";
-
+import HomeSells from "./components/HomeSells/HomeSells";
+import TableSales from "./components/tablaSales/tableSales";
+import TableEvents from "./components/tablaEvents/tablaEvents";
+import TablaDiasDePago from "./components/tablaDiasDePago/TablaDiasDePago";
+import TablaPreciosPorZonaPacks from "./components/PrecioPorZonaPacks/PrecioPorZonaPacks";
+import TablaPreciosPack from "./components/tableHoursPacks/tableHoursPacks";
 function App() {
   return (
     <AuthProvider>
@@ -39,7 +44,7 @@ function App() {
           <Route
             element={
               <PrivateRoute
-                allowedRoles={["7ffeb105-5710-4348-b01f-45d5e19c06d4", "b7b46a2a-3161-4866-ab7d-6f6d8cffee36"]}
+                allowedRoles={["7ffeb105-5710-4348-b01f-45d5e19c06d4", "918ca9de-2c5c-4ac2-bea1-9ec85b90b809"]}
               />
             }
           >
@@ -52,7 +57,7 @@ function App() {
             <Route path="/zona" element={<TablaZona />} />
             <Route path="/ciudad" element={<TablaCiudades />} />
             <Route path="/TablaProductos" element={<TablaProductos />} />
-            <Route path="/Cotizacion" element={<CotizacionPage />} />
+            <Route path="/cotizaciones" element={<CotizacionPage />} />
             <Route path="/homeInventory" element={<HomeInventory />} />
             <Route path="/TablaPacks" element={<TablaPacks />} />
             <Route path="/TablaAdds" element={<TablaAdds />} />
@@ -60,7 +65,13 @@ function App() {
             <Route path="/TablaEmpresas" element={<TablaEmpresas />} />
             <Route path="/PreciosPorZona" element={<TablaPreciosPorZona />} />
             <Route path="/tablaPrecios/:idZone" element={<TablaPrecios />} />
-            <Route path="/Crear_Cotizacion" element={<FormCotization reference={""} clientId={""} discount={0} typePricesId={""} telephone={""} SocialMediasId={""} email={""} events={[]} />} />
+            <Route path="/HomeSells" element={<HomeSells />} />
+            <Route path="/Ventas/:id" element={<TableSales />} />
+            <Route path="/Eventos" element={<TableEvents />} />
+            <Route path="/Dias_de_pago" element={<TablaDiasDePago />} />
+            <Route path="/PreciosPorZonaPacks" element={<TablaPreciosPorZonaPacks />} />
+            <Route path="/tablaPreciosPacks/:idZone" element={<TablaPreciosPack />} />
+            <Route path="/Crear_Cotizacion" element={<FormCotization reference={""} clientId={""} discount={0} typePricesId={""} telephone={""} SocialMediasId={""} email={""} events={[]} IVA={0} totalNeto={0} subTotal={0} />} />
           </Route>
 
           {/* Rutas protegidas para el comercial */}

@@ -60,7 +60,7 @@ export const getRoleById = async (id: string): Promise<Role> => {
     }
 
     const data = await response.json();
-    return data; // Retorna el rol encontrado
+    return data.data; // Retorna el rol encontrado
   } catch (error) {
     console.error(error);
     throw error; // Maneja el error según tus necesidades

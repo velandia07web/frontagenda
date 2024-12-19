@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Client, createClient, updateClient } from "../../servicios/clients";
 import { SocialMedia, getAllSocialMedias } from "../../servicios/socialMedia";
-import { TypeDocument, getAllTypeDocuments } from "../../servicios/TypeDocuments";
+import { PaymentDates, getAllPaymentDates } from "../../servicios/PaymentsDates";
 import { TypeClient, getAllTypeClients } from "../../servicios/TypeClients";
 import { getAllCompanies, Company } from "../../servicios/Company";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -17,34 +17,36 @@ interface FormClientesProps {
 
 const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientData, onSave }) => {
   const [socialMedia, setSocialMedia] = useState<Array<SocialMedia>>([])
-  const [TypeDocument, setTypeDocument] = useState<Array<TypeDocument>>([])
   const [TypeClient, setTypeClient] = useState<Array<TypeClient>>([])
   const [companies, setCompanies] = useState<Array<Company>>([])
   const [_selectedTypeClient, setSelectedTypeClient] = useState<string>("");
+  const [paymentsDate,setPaymentsDate] = useState<Array<PaymentDates>>([])
   const [formData, setFormData] = useState<Client>({
     name: "",
     lastName: "",
     CC: "",
-    idSocialMedia: "",
-    idTypeDocument: "",
-    numberDocument: "",
     email: "",
-    idCompany: "",
     celphone: "",
     charge: "",
     cupoDisponible: 0,
-    cupoCopado: 0
+    cupoCopado: 0,
+    idTypeClient: "",
+    idCompany: "",
+    idSocialMedia: "",
+    typePayment: "",
+    idPaymentsDate: "",
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const paymentsDateData = await getAllPaymentDates()
         const socialMediaData = await getAllSocialMedias();
-        const TypeDocumentData = await getAllTypeDocuments();
         const TypeClientData = await getAllTypeClients()
         const companiesData = await getAllCompanies();
+        setPaymentsDate(paymentsDateData)
+        console.log(paymentsDateData)
         setSocialMedia(socialMediaData)
-        setTypeDocument(TypeDocumentData)
         setTypeClient(TypeClientData)
         setCompanies(companiesData)
       } catch (error) {
@@ -60,7 +62,7 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
     // Si recibimos datos del cliente, los colocamos en el formulario para editar
     if (clientData) {
       setFormData(clientData);
-      setSelectedTypeClient(clientData.idTypeDocument || "");
+      setSelectedTypeClient(clientData.id || "");
     } else {
       resetForm(); // Si no hay cliente, limpiamos el formulario
     }
@@ -72,14 +74,15 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
       lastName: "",
       CC: "",
       idSocialMedia: "",
-      idTypeDocument: "",
-      numberDocument: "",
       email: "",
       idCompany: "",
       celphone: "",
       charge: "",
+      idTypeClient: "",
       cupoDisponible: 0,
-      cupoCopado: 0
+      cupoCopado: 0,
+      typePayment: "",
+      idPaymentsDate: "",
     });
     setSelectedTypeClient("");
   };
@@ -87,7 +90,7 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
   const resetFormFields = (newTypeClient: string) => {
     // Encontrar el nombre del tipo de cliente basado en el ID
     const selectedType = TypeClient.find((item) => item.id === newTypeClient)?.name;
-  
+
     if (selectedType === "Empresa") {
       // Limpiar campos relacionados con Persona Natural
       setFormData((prev) => ({
@@ -102,8 +105,6 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
       setFormData((prev) => ({
         ...prev,
         company: "",
-        idTypeDocument: "",
-        numberDocument: "",
         name: prev.name, // Conservar valores de persona si los tiene
         lastName: prev.lastName,
         CC: prev.CC,
@@ -116,17 +117,21 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-  
+
     // Si el cambio es en el tipo de cliente
     if (name === "idTypeClient") {
       // Resetear campos específicos al cambiar entre "Empresa" y "Persona Natural"
       resetFormFields(value);
     }
-  
+
     // Actualizar el estado general del formulario
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      ...(name === "typePayment" && value !== "Cuotas" ? { cupoDisponible: 0 } : {}),
+    }));
   };
-  
+
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -136,21 +141,19 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
         // Si hay un ID, actualizamos (PUT)
         await updateClient(formData.id, formData);
 
-        alert("Cliente actualizado correctamente");
       } else {
         // Si no hay ID, creamos (POST)
+        console.log(formData)
         await createClient(formData);
-        alert("Cliente creado correctamente");
       }
       onSave(formData); // Pasa 'formData' para refrescar la lista de clientes
       handleClose(); // Cierra el modal
       resetForm(); // Limpia el formulario
     } catch (error) {
-      console.error("Error al guardar el cliente:", error);
       alert("Ocurrió un error al guardar el cliente.");
     }
   };
-  
+
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -205,7 +208,7 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
             if (selectedClientType === "Empresa") {
               return (
                 <>
-                <Form.Group controlId="formName">
+                  <Form.Group controlId="formName">
                     <Form.Label>Nombre de la persona a cargo</Form.Label>
                     <Form.Control
                       type="text"
@@ -255,34 +258,6 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
                       ))}
                     </Form.Control>
                   </Form.Group>
-                  <Form.Group controlId="formIdTypeDocument">
-                    <Form.Label>Tipo de documento de la empresa</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="idTypeDocument"
-                      value={formData.idTypeDocument}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Seleccionar Tipo de Documento</option>
-                      {TypeDocument.map((doc) => (
-                        <option key={doc.id} value={doc.id}>
-                          {doc.name}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group controlId="formNumberDocument">
-                    <Form.Label>Número de Documento de la empresa</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="numberDocument"
-                      value={formData.numberDocument}
-                      onChange={handleChange}
-                      placeholder="Ingrese el número de documento"
-                      required
-                    />
-                  </Form.Group>
                   <Form.Group controlId="formCharge">
                     <Form.Label>Cargo en la empresa</Form.Label>
                     <Form.Control
@@ -321,35 +296,72 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
                       required
                     />
                   </Form.Group>
-                  
-                  <Form.Group controlId="formIdTypeDocument">
-                    <Form.Label>Tipo de documento</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="idTypeDocument"
-                      value={formData.idTypeDocument}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Seleccionar Tipo de Documento</option>
-                      {TypeDocument.map((doc) => (
-                        <option key={doc.id} value={doc.id}>
-                          {doc.name}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group controlId="formNumberDocument">
-                    <Form.Label>Número de Documento</Form.Label>
+                  <Form.Group controlId="formCC">
+                    <Form.Label>Cédula</Form.Label>
                     <Form.Control
                       type="text"
-                      name="numberDocument"
-                      value={formData.numberDocument}
+                      name="CC"
+                      value={formData.CC}
                       onChange={handleChange}
-                      placeholder="Ingrese el número de documento"
+                      placeholder="Ingrese el número de cédula"
                       required
                     />
                   </Form.Group>
+                  <Form.Group controlId="formTypePayment">
+                    <Form.Label>Tipo de pago</Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="typePayment"
+                      value={formData.typePayment}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Tipo de pago</option>
+                      <option key={"Contado"} value={"Contado"}>
+                        Contado
+                      </option>
+                      <option key={"Cuotas"} value={"Cuotas"}>
+                        Cuotas
+                      </option>
+                    </Form.Control>
+                  </Form.Group>
+
+                  {/* Mostrar campo de cupo disponible solo si se selecciona "Cuotas" */}
+                  {formData.typePayment === "Cuotas" && (
+                    
+                    
+                    <Form.Group controlId="formCupoDisponible">
+                      <Form.Label>Cupo disponible</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="cupoDisponible"
+                        value={formData.cupoDisponible}
+                        onChange={handleChange}
+                        placeholder="Ingrese el cupo disponible"
+                      />
+                    </Form.Group>
+                  )}
+                  {/* Mostrar campo de idPaymentsDate solo si se selecciona "Cuotas" */}
+                  {formData.typePayment === "Cuotas" && (
+                    <Form.Group controlId="formPaymentsDate">
+                      <Form.Label>Fecha de pago</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="idPaymentsDate"
+                        value={formData.idPaymentsDate}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Seleccionar Fecha de Pago</option>
+                        {paymentsDate.map((payment) => (
+                          <option key={payment.id} value={payment.id}>
+                            {payment.numberDays + "Días" }
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                  )}
+
                 </>
               );
             }
@@ -381,16 +393,7 @@ const FormClientes: React.FC<FormClientesProps> = ({ show, handleClose, clientDa
             />
           </Form.Group>
 
-          <Form.Group controlId="formCupoDisponible">
-            <Form.Label>Cupo disponible</Form.Label>
-            <Form.Control
-              type="number"
-              name="cupoDisponible" // Cambiado a la propiedad correcta
-              value={formData.cupoDisponible}
-              onChange={handleChange}
-              placeholder="Ingrese el cupo disponible"
-            />
-          </Form.Group>
+
 
 
           <div className="d-flex justify-content-center mt-4">

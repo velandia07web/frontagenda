@@ -3,14 +3,15 @@ import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faEdit, faPowerOff, faPlus } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./tablaEmpresas.css";
 import FormCompanies from "../formCompany/formCompany.tsx";
 import Swal, { SweetAlertResult } from "sweetalert2";
 import styled from "styled-components";
-import { Company, getAllCompanies, deleteCompany } from "../../servicios/Company.tsx";
+import { Company, getAllCompanies, deleteCompany, createCompany, putCompany } from "../../servicios/Company.tsx";
+import { getAllPaymentDates, PaymentDates } from "../../servicios/PaymentsDates.tsx";
 
 const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
   // Aquí van tus estilos personalizados
@@ -21,7 +22,8 @@ const TablaEmpresas: React.FC = () => {
   const [search, setSearch] = useState("");
   const [showModalCompany, setShowModalCompany] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | undefined>();
-  const [companyList, setCompanyList] = useState<Array<Company>>(); // Lista dinámica de empresas
+  const [companyList, setCompanyList] = useState<Array<Company>>(); 
+  const [PaymentDates, setPaymentDates] = useState<Array<PaymentDates>>([]);
   const navigate = useNavigate();
 
   const handleToggleMenu = (isExpanded: boolean) => setIsSlideMenuExpanded(isExpanded);
@@ -37,24 +39,37 @@ const TablaEmpresas: React.FC = () => {
     setSelectedCompany(undefined); // Limpia la empresa seleccionada
   };
 
-  const handleSaveCompany = (newCompany: Company) => {
-    if (newCompany.id) {
-      // Actualizar empresa existente
-      setCompanyList((prevCompanies) =>
-        prevCompanies?.map((company) =>
-          company.id === newCompany.id ? newCompany : company
-        )
-      );
-    } else {
-      // Añadir nueva empresa
-      setCompanyList((prevCompanies) => [...(prevCompanies || []), newCompany]);
+  const handleSaveCompany = async (newCompany: Company) => {
+    try {
+      if (newCompany.id) {
+        const updatedCompany = await putCompany(newCompany.id, newCompany);
+        setCompanyList((prevCompanies) =>
+          prevCompanies?.map((company) =>
+            company.id === updatedCompany.id ? updatedCompany : company
+          )
+        );
+        Swal.fire("Actualizado", "La empresa fue actualizada exitosamente", "success");
+      } else {
+        const createdCompany = await createCompany(newCompany);
+        setCompanyList((prevCompanies) => [...(prevCompanies || []), createdCompany]);
+        window.location.reload()
+        Swal.fire("Creado", "La nueva empresa fue creada exitosamente", "success");
+      }
+      
+      setShowModalCompany(false);
+    } catch (error) {
+      console.error("Error al guardar la empresa: ", error);
+      Swal.fire("Error", "Hubo un problema al guardar la empresa", "error");
     }
   };
+  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const companiesData = await getAllCompanies();
+        const PaymentDatesData = await getAllPaymentDates()
+        setPaymentDates(PaymentDatesData)
         setCompanyList(companiesData);
       } catch (error) {
         console.error("Error al obtener todas las empresas: ", error);
@@ -66,27 +81,28 @@ const TablaEmpresas: React.FC = () => {
 
   const handleDelete = (row: Company) => {
     Swal.fire({
-      title: `¿Estás seguro de que deseas eliminar a ${row.name}?`,
-      text: "Esta acción no se puede deshacer.",
+      title: `¿Estás seguro de cambiar el estado a ${row.name}?`,
+      text: "Esta acción podría afectar otros procesos",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí, cambiar estado",
       cancelButtonText: "Cancelar",
     }).then(async (result: SweetAlertResult) => {
       if (result.isConfirmed) {
         try {
           await deleteCompany(row.id || "");
           Swal.fire({
-            title: "Eliminado",
-            text: `Empresa ${row.name} eliminada`,
+            title: "Estado cambiado",
+            text: `Empresa ${row.name} cambiado`,
             icon: "success",
             confirmButtonText: "OK",
           });
+          window.location.reload()
           setCompanyList(companyList?.filter((company) => company.id !== row.id));
         } catch (error) {
           Swal.fire({
             title: "Error",
-            text: "No se pudo eliminar la empresa.",
+            text: "No se pudo cambiar el estado de la empresa.",
             icon: "error",
             confirmButtonText: "OK",
           });
@@ -106,6 +122,24 @@ const TablaEmpresas: React.FC = () => {
     { name: "Nombre", selector: (row: Company) => row.name, sortable: true },
     { name: "Nombre Legal", selector: (row: Company) => row.legalName, sortable: true },
     { name: "Correo", selector: (row: Company) => row.email, sortable: true },
+    {
+      name: "Estado",
+      cell: (row: Company) => (
+        <div className={`state ${row.state === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.state}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
+    { name: "Tipo de pago", selector: (row: Company) => row.typePayment, sortable: true },
+    {
+      name: "Días de pago",
+      cell: (row: Company) => {
+        const payment = PaymentDates.find((pd) => pd.id === row.idPaymentsDate);
+        return payment ? payment.numberDays + " Días" : "No definido"; // Devuelve el número de días o un valor predeterminado
+      },
+      sortable: true,
+    },
     { name: "Teléfono", selector: (row: Company) => row.phone, sortable: true },
     { name: "Dirección", selector: (row: Company) => row.address || "No especificado", sortable: true },
     { name: "Sitio Web", selector: (row: Company) => row.website || "No especificado", sortable: true },
@@ -120,10 +154,10 @@ const TablaEmpresas: React.FC = () => {
       ignoreRowClick: true,
     },
     {
-      name: "Eliminar",
+      name: "Desactivar",
       cell: (row: Company) => (
         <button className="btn btn-link" onClick={() => handleDelete(row)}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faPowerOff} />
         </button>
       ),
       ignoreRowClick: true,

@@ -3,10 +3,11 @@ import DataTable from "react-data-table-component";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { SocialMedia, getAllSocialMedias } from "../../servicios/socialMedia";
+import { getAllCities, City } from "../../servicios/city";
 import { getAllClientsFiltred, clientFiltred, getCompanyByClientId } from "../../servicios/clients";
 import { getAllTypePrices, TypePrices } from "../../servicios/TypePrices";
 import { Company } from "../../servicios/Company";
-import { Event, Quotations, createQuotation } from "../../servicios/quotations";
+import { Event, Quotations, createQuotation, response } from "../../servicios/quotations";
 import { Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -15,6 +16,7 @@ import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./formContizacion.css";
 import ResumeQuotations from "../resumeCotizacion/resumeCotizacion";
+import Swal from "sweetalert2";
 
 const StyledDataTable = styled((props: any) => <DataTable {...props} />)`
 `;
@@ -23,8 +25,9 @@ const FormCotization: React.FC<Quotations> = () => {
     const [isSlideMenuExpanded, setIsSlideMenuExpanded] = useState(false);
     const [showFormModalEvent, setShowFormModalEvent] = useState(false);
     const [showModalQuotations, setShowModalQuotations] = useState(false);
-    const [quotation, setQuotation] = useState<Quotations>();
-    const [events, setEvents] = useState<any[]>([]);
+    const [quotation, setQuotation] = useState<response>();
+    const [events, setEvents] = useState<Event[]>([]);
+    const [cities, setCities] = useState<City[]>([])
     const [clients, setClients] = useState<Array<clientFiltred>>([]);
     const [typePrices, setTypePrices] = useState<Array<TypePrices>>([]);
     const [socialMedia, setSocialMedia] = useState<SocialMedia[]>([]);
@@ -51,19 +54,41 @@ const FormCotization: React.FC<Quotations> = () => {
         return `${year}-${month}-${day}`;
     };
 
+    const resultEvents = () => {
+        let result = 0;
+        let subTotal = 0;
+    
+        events.forEach(event => {
+            subTotal += event.total;
+        });
+    
+        // Convertir el valor de (formData.IVA / 100) a decimal y asegurar que es un número
+        const resultIVA = subTotal * parseFloat((formData.IVA / 100).toFixed(2));
+        result = (subTotal - formData.discount) + resultIVA;
+    
+        return {
+            result: result,
+            resultIVA: resultIVA,
+            subTotal: subTotal,
+        };
+    };
+    
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const [
+                    citiesData,
                     socialMedias,
                     clientsData,
                     typePricesData,
                 ] = await Promise.all([
+                    getAllCities(),
                     getAllSocialMedias(),
                     getAllClientsFiltred(),
                     getAllTypePrices(),
                 ]);
-
+                setCities(citiesData)
                 setSocialMedia(socialMedias);
                 setClients(clientsData);
                 setTypePrices(typePricesData);
@@ -79,6 +104,9 @@ const FormCotization: React.FC<Quotations> = () => {
         reference: "",
         clientId: "",
         discount: 0,
+        IVA: 19,
+        totalNeto: 0,
+        subTotal: 0,
         typePricesId: "",
         telephone: "",
         SocialMediasId: "",
@@ -125,6 +153,9 @@ const FormCotization: React.FC<Quotations> = () => {
             reference: formData.reference,
             clientId: formData.clientId,
             discount: formData.discount,
+            IVA: formData.IVA,
+            totalNeto: resultEvents().result,
+            subTotal: resultEvents().subTotal,
             typePricesId: formData.typePricesId,
             telephone: clientSelected?.telCliente || "No asociado",
             SocialMediasId: formData.SocialMediasId,
@@ -136,15 +167,23 @@ const FormCotization: React.FC<Quotations> = () => {
 
             if (res) {
                 setQuotation(res)
+                console.log(res)
                 handleOpenModalQuotations()
             }
 
-            alert("Cotización creada con éxito");
+              Swal.fire(
+                              "Cotización creada",
+                              `Se ha creado la cotización ${res.id}`,
+                              "success"
+                            );
 
             setFormData({
                 reference: "",
                 clientId: "",
                 discount: 0,
+                IVA: 0,
+                totalNeto: 0,
+                subTotal:0,
                 typePricesId: "",
                 telephone: "",
                 SocialMediasId: "",
@@ -155,7 +194,11 @@ const FormCotization: React.FC<Quotations> = () => {
 
         } catch (error) {
             console.error("Error al crear la cotización:", error);
-            alert("Hubo un error al crear la cotización");
+            Swal.fire(
+                "Error",
+                `Ocurrió un error al momento de crear la cotización`,
+                "error"
+              );
         }
     };
 
@@ -165,36 +208,88 @@ const FormCotization: React.FC<Quotations> = () => {
             selector: (row: Event) => row.name,
             sortable: true,
             center: true,
+            width: '100px'
         },
         {
             name: "Ciudad",
-            selector: (row: Event) => row.cityId,
+            cell: (row: Event) => {
+                const city = cities.find((city) => city.id === row.cityId); // Busca la ciudad por ID
+                return city ? city.name : "Ciudad no encontrada"; // Devuelve el nombre de la ciudad o un mensaje de error
+            },
             sortable: true,
             center: true,
         },
         {
-            name: "Fecha de evento",
-            selector: (row: Event) => row.dateEvent,
+            name: "Fecha de inicio",
+            selector: (row: Event) => row.dateStart,
             sortable: true,
             center: true,
         },
         {
-            name: "Cantidad de productos",
-            selector: (row: Event) => row.products.length,
+            name: "Fecha fin",
+            selector: (row: Event) => row.dateEnd,
             sortable: true,
             center: true,
         },
         {
-            name: "Cantidad de adicionales",
-            selector: (row: Event) => row.adds.length,
+            name: "Productos",
+            cell: (row: Event) => (
+                <ul>
+                    {row.products.map((product) => (
+                        <li key={product.id}>
+                            {product.nameProduct}, <br />
+                            Cantidad: {product.quantity},  <br />
+                            Horas: {product.hour}, <br />
+                            Precio: ${product.price} <br /> 
+                            Precio Hora Muerta: ${product.priceDeadHour}, <br /> 
+                            Cantida de horas muertas: {product.quantityPriceDeadHour}
+                        </li>
+                    ))}
+                </ul>
+            ),
+            width: "200px",
             sortable: true,
             center: true,
         },
         {
-            name: "Cantidad de paquetes",
-            selector: (row: Event) => row.packs.length,
+            name: "Adicionales",
+            cell: (row: Event) => (
+                <ul>
+                    {row.adds.map((add) => (
+                        <li key={add.id}>
+                            {add.nameAdd}, <br />
+                            Precio: ${add.price}, <br />
+                            Cantidad: {add.quantity}
+                        </li>
+                    ))}
+                </ul>
+            ),
+            width: "150px",
             sortable: true,
             center: true,
+        },
+        {
+            name: "Paquetes",
+            cell: (row: Event) => (
+                <ul>
+                    {row.packs.map((pack) => (
+                        <li key={pack.id}>
+                            {pack.namePack},<br /> 
+                            Precio: ${pack.price},<br /> 
+                            Cantidad: {pack.quantity}
+                        </li>
+                    ))}
+                </ul>
+            ),
+            width: "150px",
+            sortable: true,
+            center: true,
+        },
+        {
+            name: "Total del evento",
+            selector: (row: Event) => `$ ${row.total}`,
+            sortable: true,
+            center: true
         },
         {
             name: "Eliminar",
@@ -221,19 +316,7 @@ const FormCotization: React.FC<Quotations> = () => {
                         <h1 className="text-center titulo-tabla">Cotización</h1>
                         <Form onSubmit={handleSubmit}>
                             <div className="row mb-3">
-                                <div className="col-md-4">
-                                    <Form.Group controlId="formCotizacion">
-                                        <Form.Label>Cotización</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Ingrese el número de la cotización"
-                                            name="reference"
-                                            value={formData.reference}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </Form.Group>
-                                </div>
+                           
                                 <div className="col-md-4">
                                     <Form.Group controlId="formFecha">
                                         <Form.Label>Fecha</Form.Label>
@@ -257,16 +340,14 @@ const FormCotization: React.FC<Quotations> = () => {
                                             required
                                         >
                                             <option value="">Seleccionar Referencia</option>
-                                            {socialMedia.map((zona) => (
-                                                <option key={zona.id} value={zona.id}>
-                                                    {zona.name}
+                                            {socialMedia.map((media) => (
+                                                <option key={media.id} value={media.id}>
+                                                    {media.name}
                                                 </option>
                                             ))}
                                         </Form.Control>
                                     </Form.Group>
                                 </div>
-                            </div>
-                            <div className="row mb-3">
                                 <div className="col-md-4">
 
                                     <Form.Group controlId="formNombre">
@@ -323,7 +404,7 @@ const FormCotization: React.FC<Quotations> = () => {
                                             type="email"
                                             name="email"
                                             value={clientSelected?.emailcliente}
-                                            disabled
+                                            onChange={handleChange}
                                             placeholder="Ingrese el correo electrónico"
                                             required
                                         />
@@ -363,8 +444,21 @@ const FormCotization: React.FC<Quotations> = () => {
                                     </Form.Group>
 
                                 </div>
-                            </div>
+                                <div className="col-md-4">
+                                    <Form.Group controlId="formIVA">
+                                        <Form.Label>IVA sin el %</Form.Label>
+                                        <Form.Control
+                                            className="input"
+                                            type="number"
+                                            name="IVA"
+                                            value={formData.IVA || 19}  // Asegúrate de que siempre tenga un valor
+                                            placeholder="Ingrese el IVA sin %"
+                                            onChange={handleChange}
+                                        />
+                                    </Form.Group>
 
+                                </div>
+                            </div>
                             <div className="d-flex  gap-2 mb-4" >
                                 <Button variant="primary" type="button" onClick={handleOpenModalEvent}>
                                     Añadir evento
@@ -372,7 +466,7 @@ const FormCotization: React.FC<Quotations> = () => {
                             </div>
 
                             <div className="contenedorTabla">
-                                <div className="table-responsive">
+                                <div className="table-responsiveFormCotizacion">
                                     <StyledDataTable
                                         columns={columns}
                                         data={events}
@@ -382,7 +476,31 @@ const FormCotization: React.FC<Quotations> = () => {
                                         noDataComponent="No hay servicios registrados."
                                     />
                                 </div>
-                            </div>
+                            </div>  
+                            <div className="d-flex justify-content-center">
+    <div>
+        <div className="d-flex justify-content-between mb-2">
+            <h5>Subtotal:</h5>
+            <h5>$ {resultEvents().subTotal}</h5>
+        </div>
+        <div className="d-flex justify-content-between mb-2">
+            <h5>IVA:</h5>
+            <h5>{formData.IVA}%</h5>
+        </div>
+        <div className="d-flex justify-content-between mb-2">
+            <h5>IVA total:</h5>
+            <h5>$ {resultEvents().resultIVA}</h5>
+        </div>
+        <div className="d-flex justify-content-between mb-2">
+            <h5>Descuento:</h5>
+            <h5>$ {formData.discount}</h5>
+        </div>
+        <div className="d-flex justify-content-between gap-5">
+            <h5>Total neto a pagar:</h5>
+            <h5>$ {resultEvents().result}</h5>
+        </div>
+    </div>
+</div>
 
                             <div className="text-center mt-4">
                                 <Button variant="primary" type="submit">
@@ -406,7 +524,7 @@ const FormCotization: React.FC<Quotations> = () => {
             {showModalQuotations && (
                 <ResumeQuotations
                     show={showModalQuotations}
-                    quotation={quotation!}
+                    idQuotation={quotation?.id || ""}
                     handleClose={handleCloseModalQuotations}
                 />
             )}

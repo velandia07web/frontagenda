@@ -8,6 +8,7 @@ export interface Product {
   description: string;
   count: number;
   idZone: string;
+  state?: string;
 }
 
 // Interfaz para la respuesta de la API
@@ -39,6 +40,8 @@ interface productPriceResponse {
 export interface Price {
   hour: string;
   price: number;
+  priceDeadHour: number;
+  numberHour: number;
 }
 
 export interface ProductPriceElement {
@@ -56,9 +59,15 @@ export interface AddPriceElement {
 export interface PackPriceElement {
   id: string;
   name: string;
+  description: string;
+  idProduct: string;
+  price: number;
+  priceDeadHour: number;
+  productName: string;
 }
 
 export interface PriceElements {
+  transportPrice: number;
   products: ProductPriceElement[];
   adds: AddPriceElement[];
   packs: PackPriceElement[];
@@ -71,11 +80,11 @@ interface PriceElementsResponse {
 }
 
 
-export const getAllProductsByTypePrice = async (id: string): Promise<PriceElements> => {
+export const getAllProductsByTypePrice = async (id: string, idZone: string, idCity: string): Promise<PriceElements> => {
   try {
     const token = localStorage.getItem("token"); // Obtiene el token del localStorage
 
-    const response = await fetch(`${port}/product/products-data?idTypePrice=${id}`, {
+    const response = await fetch(`${port}/product/products-data?idTypePrice=${id}&idZone=${idZone}&idCity=${idCity}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

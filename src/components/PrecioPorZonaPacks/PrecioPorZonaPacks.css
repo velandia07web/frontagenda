@@ -1,0 +1,80 @@
+
+  
+  .dashboard-cardsPrices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 5px 78px;
+  }
+  
+  @media (max-width: 550px) {
+    .menu-header {
+      width: 60px; /* Mantiene el header en estado contraído en pantallas pequeñas */
+    }
+  
+    .menu-toggle {
+      cursor: pointer;
+      display: block;
+      color: #fff;
+      font-size: 24px;
+    }
+  
+    .slide-menu-container {
+      width: 60px; /* Ancho fijo para el contenedor del menú en pantallas pequeñas */
+      width: 60px; /* Ancho fijo para el contenedor del menú en pantallas pequeñas */
+      position: fixed; /* Asegura que el contenedor esté fijo */
+      top: 0; /* Alinea el contenedor en la parte superior */
+      left: 0;
+      z-index: 1000; /* Asegura que el contenedor esté sobre otros elementos */
+    }
+  
+    .slide-menu {
+      top: 74px; /* Ajusta para que esté debajo del header */
+      height: calc(100vh - 74px); /* Altura ajustada para pantallas pequeñas */
+      width: 60px; /* Ancho por defecto cuando está colapsado */
+      /* Asegura que el menú se superponga */
+      z-index: 1000; /* Asegura que el menú esté sobre otros elementos */
+    }
+  
+    .slide-menu-container.expanded .slide-menu {
+      width: 250px; /* Ancho cuando está expandido */
+    }
+  
+    .slide-menu:hover {
+      width: 250px; /* Ancho cuando está en hover */
+    }
+  
+    .content-area {
+      padding: 0; /* No desplaza el contenido en pantallas pequeñas */
+      position: relative; /* Asegura que el contenido se mantenga en su lugar */
+      z-index: 1; /* Mantiene el contenido debajo del menú */
+      margin-left: 0px;
+    }
+    .content-area.expanded {
+      margin-left: 0px !important;
+    }
+  }
+  
+  @media (min-width: 551px) {
+    .menu-toggle {
+      cursor: pointer;
+      color: #fff;
+    }
+  
+    .slide-menu-container {
+      width: 60px; /* Ancho cuando está contraído */
+    }
+  
+    .slide-menu-container.expanded .slide-menu {
+      width: 250px; /* Ancho cuando está expandido */
+    }
+  
+    .content-area {
+      margin-left: 60px; /* Ancho cuando el menú está contraído */
+    }
+  
+    .content-area.expanded {
+      margin-left: 250px; /* Ancho cuando el menú está expandido */
+    }
+  }
+  

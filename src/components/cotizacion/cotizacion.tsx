@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import SlideMenu from "../SlideMenu/SlideMenu";
 import NavbarComponent from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
-import { QuotationsResume, getAllQuotations } from "../../servicios/quotations";
+import { QuotationsResume, getAllQuotations, sendEmail } from "../../servicios/quotations";
+import Swal, { SweetAlertResult } from "sweetalert2";
 import { TypePrices, getAllTypePrices } from "../../servicios/TypePrices";
+import { inactiveQuotation } from "../../servicios/quotations";
 import { Client, getAllClients } from "../../servicios/clients";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faPowerOff,
+  faEnvelope
+ } from "@fortawesome/free-solid-svg-icons";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./cotizacion.css";
@@ -43,6 +50,65 @@ const CotizacionPage: React.FC = () => {
     navigate("/Crear_Cotizacion");
   };
 
+  const resendEmail = (row: QuotationsResume) => {
+    Swal.fire({
+      title: `¿Estás seguro de reenviar el correo de aceptación a ${row.email}?`,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Sí, enviar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result: SweetAlertResult) => {
+      if (result.isConfirmed) {
+        try {
+          await sendEmail(row.id || "");
+          Swal.fire({
+            title: "Correo enviado",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo reenviar el correo",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          console.error("Error al enviar el correo:", error);
+        }
+      }
+    });
+  }
+
+  const handleDelete = (row: QuotationsResume) => {
+    Swal.fire({
+      title: `¿Estás seguro de cambiar el estado de la cotización con número de referencia ${row.reference}?`,
+      text: "Esta acción podría afectar otros procesos",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cambiar estado",
+      cancelButtonText: "Cancelar",
+    }).then(async (result: SweetAlertResult) => {
+      if (result.isConfirmed) {
+        try {
+          await inactiveQuotation(row.id || "");
+          Swal.fire({
+            title: "Estado cambiado",
+            text: `Cotización ${row.reference} cambiado`,
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo cambiar el estado de la cotización.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          console.error("Error al eliminar la cotización:", error);
+        }
+      }
+    });
+  };
   const columns = [
     {
       name: "Referencia",
@@ -63,14 +129,43 @@ const CotizacionPage: React.FC = () => {
       sortable: true,
     },
     {
+      name: "Etapa",
+      cell: (row: QuotationsResume) => {
+        const getClassForState = (state: string) => {
+          switch (state) {
+            case "Pendiente":
+              return "pending";
+            case "Aprobado":
+              return "approve";
+            case "Rechazada":
+              return "refused";
+            default:
+              return "default-class"; // Clase por defecto para estados no especificados
+          }
+        };
+    
+        return (
+          <div className={`state ${getClassForState(row.state || "")}`}>
+            <p>{row.state}</p>
+          </div>
+        );
+      },
+      ignoreRowClick: true,
+    },
+    {
+      name: "Estado",
+      cell: (row: QuotationsResume) => (
+        <div className={`state ${row.etapa === "ACTIVO" ? "active" : "inactive"}`}>
+          <p>{row.etapa}</p>
+        </div>
+      ),
+      ignoreRowClick: true,
+    },
+    {
       name: "Tipo de Evento",
       selector: (row: QuotationsResume) => {
-        const typePrice = typePrices.find((tp) => tp.id === row.typePricesId);
-        if (typePrice) {
-          if (typePrice.name === "Precio Publico") return "Evento Empresarial";
-          if (typePrice.name === "Precio con Descuento") return "Evento Social";
-        }
-        return "Tipo de evento no encontrado";
+        return typePrices.find((tp) => tp.id === row.typePricesId)?.name;
+       
       },
       sortable: true,
     },
@@ -99,7 +194,25 @@ const CotizacionPage: React.FC = () => {
       selector: (row: QuotationsResume) => row.totalNet,
       sortable: true,
       right: true,
-    }
+    },
+    {
+      name: "Enviar correo",
+      cell: (row: QuotationsResume) => (
+        <button className="btn btn-link" onClick={() => resendEmail(row)}>
+          <FontAwesomeIcon icon={faEnvelope} />
+        </button>
+      ),
+      ignoreRowClick: true,
+    },
+    {
+      name: "Desactivar",
+      cell: (row: QuotationsResume) => (
+        <button className="btn btn-link" onClick={() => handleDelete(row)}>
+          <FontAwesomeIcon icon={faPowerOff} />
+        </button>
+      ),
+      ignoreRowClick: true,
+    },
   ];
 
   return (
@@ -108,13 +221,12 @@ const CotizacionPage: React.FC = () => {
       <div className="d-flex flex-grow-1 tablaClien">
         <SlideMenu onToggleMenu={setIsSlideMenuExpanded} />
         <main
-          className={`content-area-table ${
-            isSlideMenuExpanded ? "expanded" : ""
-          }`}
+          className={`content-area-table ${isSlideMenuExpanded ? "expanded" : ""
+            }`}
         >
           <div className="container mt-4">
             <h1 className="text-center titulo-tabla">Tabla de Cotizaciones</h1>
-            <div className="botones">
+            <div className="botonesC">
               <button
                 onClick={goToCrearCotizacion}
                 className="btn btn-primary crear"
