@@ -330,7 +330,7 @@ const FormEventsModal: React.FC<FormEvents> = ({ show, handleClose, idTypePrice,
                                     required
                                 />
                             </Form.Group>
-                        </Col>
+                        </Col> 
                         <Col md={4}>
                             <Form.Group controlId="formDays" className="mb-3">
                                 <Form.Label>Días</Form.Label>
